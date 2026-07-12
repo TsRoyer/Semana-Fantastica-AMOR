@@ -38,7 +38,7 @@
         }
         #barra-amor { height: 100%; width: 0%; background-color: #cc2b2b; transition: width 0.1s linear; }
 
-        /* JUEGO 2: DINO MODO HARDCORE */
+        /* JUEGO 2: DINO OPTIMIZADO */
         #zona-juego-2 {
             display: none; 
             width: 100%; max-width: 400px;
@@ -54,7 +54,7 @@
             position: absolute; bottom: 0; left: 30px; font-size: 3em; line-height: 1; z-index: 2;
         }
         
-        /* Obstáculos (ahora los movemos con JS, no con CSS) */
+        /* Posiciones fijas, el movimiento se hace por Transform (GPU) */
         #obstaculo-suelo {
             position: absolute; bottom: 0; right: -100px; font-size: 2.5em; line-height: 1; z-index: 1;
         }
@@ -63,17 +63,17 @@
             position: absolute; bottom: 90px; right: -100px; font-size: 2.8em; line-height: 1; z-index: 1;
         }
 
-        /* Solo dejamos la animación del salto en CSS */
+        /* Salto optimizado con GPU */
         .animacion-salto {
             animation: saltoJugador 0.6s ease-out forwards;
         }
 
         @keyframes saltoJugador {
-            0% { bottom: 0; }
-            40% { bottom: 95px; }
-            50% { bottom: 100px; }
-            60% { bottom: 95px; }
-            100% { bottom: 0; }
+            0% { transform: translate3d(0, 0, 0); }
+            40% { transform: translate3d(0, -95px, 0); }
+            50% { transform: translate3d(0, -100px, 0); }
+            60% { transform: translate3d(0, -95px, 0); }
+            100% { transform: translate3d(0, 0, 0); }
         }
 
         /* PREMIO FINAL */
@@ -99,7 +99,7 @@
 
     <div id="zona-juego-2">
         <h1>Nivel 2: Esquiva el drama</h1>
-        <p>Salta el desamor (💔), pero <b>no saltes</b> si pasa la tormenta (🌩️). ¡Cada vez va más rápido!</p>
+        <p>Salta el desamor (💔), pero <b>no saltes</b> si pasa la tormenta (🌩️).</p>
         <div id="marcador">Puntos: <span id="puntos-texto">0</span> / 200</div>
         
         <div id="pantalla-dino" onmousedown="saltar()" ontouchstart="saltar(event)">
@@ -114,7 +114,7 @@
         <p>Qué locura de reflejos... Empezamos la semana chill pero con deberes. Ponte los cascos, dale al play y lee muy bien los títulos de las primeras canciones... hay un mensaje escondido para ti.</p>
         
         <!-- OJO: PON TU LINK DE SPOTIFY AQUI -->
-        <a href="https://open.spotify.com/playlist/6GywYteYPB5QxQvx7agk1T?si=c89b5f0e1d2f4a5f" class="boton-spotify">🎧 Abrir Playlist Secreta</a>
+        <a href="TU_LINK_DE_SPOTIFY_AQUI" class="boton-spotify">🎧 Abrir Playlist Secreta</a>
         <a href="index.html" class="boton-volver">Volver a los días</a>
     </div>
 
@@ -158,35 +158,42 @@
             }
         }
 
-        // --- LOGICA JUEGO 2 (MOTOR FÍSICO REAL) ---
+        // --- LOGICA JUEGO 2 OPTIMIZADA (60 FPS) ---
         let dinoGanado = false;
         let estaSaltando = false;
         let loopJuego;
         
-        // Variables de físicas
         let puntosFicticios = 0;
         let puntosReales = 0;
-        let velBase = 4; // Velocidad inicial
+        let velBase = 4; // Velocidad fija
         
-        // Posiciones iniciales (fuera de la pantalla por la derecha)
         let posSuelo = -100;
-        let posAire = -400; // La nube sale un poco después
+        let posAire = -400; 
+
+        // Cacheamos las variables para no saturar la memoria del móvil
+        let elPantalla, elJugador, elObsSuelo, elObsAire, anchoPantalla, elPuntos;
 
         function iniciarNivel2() {
+            elPantalla = document.getElementById('pantalla-dino');
+            elJugador = document.getElementById('jugador');
+            elObsSuelo = document.getElementById('obstaculo-suelo');
+            elObsAire = document.getElementById('obstaculo-aire');
+            elPuntos = document.getElementById('puntos-texto');
+            anchoPantalla = elPantalla.clientWidth; // Se calcula solo una vez
+
             document.getElementById('zona-juego-2').style.display = 'block';
             loopJuego = requestAnimationFrame(motorJuego2);
         }
 
         function saltar(e) {
-            if (e) e.preventDefault(); // Evita scroll raro en móviles al tocar
+            if (e) e.preventDefault(); 
             if (dinoGanado || estaSaltando) return;
             
-            let jugador = document.getElementById('jugador');
             estaSaltando = true;
-            jugador.classList.add('animacion-salto');
+            elJugador.classList.add('animacion-salto');
             
             setTimeout(() => {
-                jugador.classList.remove('animacion-salto');
+                elJugador.classList.remove('animacion-salto');
                 estaSaltando = false;
             }, 600); 
         }
@@ -194,45 +201,29 @@
         function motorJuego2() {
             if (dinoGanado) return;
 
-            let pantalla = document.getElementById('pantalla-dino');
-            let anchoPantalla = pantalla.clientWidth;
-            
-            // LA DIFICULTAD: La velocidad sube según los puntos
-// LA DIFICULTAD: Velocidad fija para que no sufra tanto
-            let velocidadActual = velBase;
+            // Movemos las posiciones lógicas
+            posSuelo += velBase;
+            posAire += velBase;
 
-            // Movemos los obstáculos
-            posSuelo += velocidadActual;
-            posAire += velocidadActual;
-
-            // LÓGICA DE APARICIÓN IRREGULAR
             if (posSuelo > anchoPantalla + 50) {
-                // Si el corazón roto sale de la pantalla, lo reseteamos.
-                // Math.min asegura que SIEMPRE aparezca al menos 250px detrás de la nube.
                 let distanciaMinima = posAire - 250; 
                 posSuelo = Math.min(-50 - (Math.random() * 200), distanciaMinima);
             }
 
             if (posAire > anchoPantalla + 100) {
-                // Lo mismo para la nube tóxica
                 let distanciaMinima = posSuelo - 250;
                 posAire = Math.min(-50 - (Math.random() * 300), distanciaMinima);
             }
 
-            // Aplicamos el movimiento visual
-            let obsSuelo = document.getElementById('obstaculo-suelo');
-            let obsAire = document.getElementById('obstaculo-aire');
-            
-            obsSuelo.style.right = posSuelo + 'px';
-            obsAire.style.right = posAire + 'px';
+            // Aplicamos movimiento usando la GPU del móvil
+            elObsSuelo.style.transform = `translate3d(-${posSuelo}px, 0, 0)`;
+            elObsAire.style.transform = `translate3d(-${posAire}px, 0, 0)`;
 
-            // SISTEMA DE COLISIONES
-            let jugador = document.getElementById('jugador');
-            let jRect = jugador.getBoundingClientRect();
-            let oSueloRect = obsSuelo.getBoundingClientRect();
-            let oAireRect = obsAire.getBoundingClientRect();
+            // Colisiones
+            let jRect = elJugador.getBoundingClientRect();
+            let oSueloRect = elObsSuelo.getBoundingClientRect();
+            let oAireRect = elObsAire.getBoundingClientRect();
 
-            // Choques
             let choqueSuelo = (
                 jRect.right > oSueloRect.left + 15 && 
                 jRect.left < oSueloRect.right - 15 && 
@@ -246,24 +237,20 @@
             );
 
             if (choqueSuelo || choqueAire) {
-                // FALLO: Castigo y reseteo
                 puntosFicticios = 0;
                 puntosReales = 0;
-                document.getElementById('puntos-texto').innerText = 0;
+                elPuntos.innerText = 0;
                 
-                // Separamos los obstáculos otra vez para darle un respiro
                 posSuelo = -100;
                 posAire = -450;
                 
-                pantalla.style.backgroundColor = 'rgba(204, 43, 43, 0.4)';
-                setTimeout(() => { pantalla.style.backgroundColor = 'rgba(0,0,0,0.1)'; }, 150);
+                elPantalla.style.backgroundColor = 'rgba(204, 43, 43, 0.4)';
+                setTimeout(() => { elPantalla.style.backgroundColor = 'rgba(0,0,0,0.1)'; }, 150);
             } else {
-                // Va sumando puntos súper despacio (cada frame)
                 puntosFicticios += 0.15; 
                 puntosReales = Math.floor(puntosFicticios);
-                document.getElementById('puntos-texto').innerText = puntosReales;
+                elPuntos.innerText = puntosReales;
 
-                // SI GANA
                 if (puntosReales >= 200) {
                     dinoGanado = true;
                     
@@ -271,11 +258,10 @@
                         document.getElementById('zona-juego-2').style.display = 'none';
                         document.getElementById('zona-premio').style.display = 'block';
                     }, 500);
-                    return; // Cortamos el bucle
+                    return; 
                 }
             }
 
-            // Repetimos el frame (Bucle infinito del juego)
             loopJuego = requestAnimationFrame(motorJuego2);
         }
     </script>
