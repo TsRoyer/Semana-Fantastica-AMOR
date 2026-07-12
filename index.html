@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta Atrás - Aniversario</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        /* ESTÉTICA GENERAL */
+        body {
+            background-color: #412b0e;
+            color: #fdfaf6;
+            font-family: 'Playfair Display', serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 24px 0 40px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .titulo-principal {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .titulo-principal span {
+            color: #cc2b2b;
+        }
+
+        /* CARRUSEL LATERAL MÓVIL (Lunes a Jueves) */
+        .contenedor-dias {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            max-width: 600px;
+            padding: 14px 16px 24px 16px;
+            box-sizing: border-box;
+            flex-wrap: wrap;
+        }
+
+        .contenedor-dias::before {
+            content: '';
+            position: absolute;
+            left: 5%;
+            right: 5%; /* Esto limita el ancho para que solo pase por detrás de los 4 días */
+            top: 50%;
+            height: 86px;
+            transform: translateY(-50%);
+            z-index: 0;
+            pointer-events: none;
+            /* SVG con stroke-dasharray para las rayas */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120'%3E%3Cpath d='M8 62 C42 26, 92 20, 126 48 C156 72, 188 80, 220 63 C249 48, 284 34, 320 48 C346 58, 372 66, 392 56' stroke='%23cc2b2b' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-dasharray='10, 10'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .contenedor-dias {
+                justify-content: flex-start;
+                overflow-x: auto;
+                overflow-y: hidden;
+                scroll-snap-type: x mandatory;
+                flex-wrap: nowrap;
+                padding: 14px 16px 24px 16px;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .contenedor-dias::-webkit-scrollbar { display: none; }
+        }
+
+        .caja-dia {
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(253, 250, 246, 0.15);
+            border-radius: 12px;
+            padding: 10px 8px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 92px;
+            min-width: 92px;
+            aspect-ratio: 1 / 1;
+            scroll-snap-align: center;
+            flex-shrink: 0;
+        }
+
+        @media (min-width: 769px) {
+            .caja-dia {
+                width: 110px;
+                min-width: 110px;
+            }
+        }
+
+        .caja-dia h2 {
+            color: #cc2b2b;
+            font-size: 0.95em;
+            margin: 0 0 10px 0;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(204, 43, 43, 0.3);
+            padding-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .candado {
+            font-size: 1.8em;
+            margin-top: 6px;
+        }
+
+        .texto-pista {
+            font-size: 0.8em;
+            line-height: 1.4;
+            display: none;
+        }
+
+        /* CAJA GIGANTE DEL VIERNES (Fuera del scroll) */
+        .contenedor-viernes {
+            width: 100%;
+            padding: 0 20px;
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
+
+        .caja-viernes {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(204, 43, 43, 0.5);
+            border-radius: 15px;
+            padding: 30px 20px; /* Más espacio interior para hacerla más grande */
+            text-align: center;
+            width: 100%; /* Ocupa todo el ancho disponible */
+            margin: 0 auto;
+            box-shadow: 0 10px 25px rgba(204, 43, 43, 0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .caja-viernes h2 {
+            color: #cc2b2b;
+            font-size: 1.25em;
+            margin: 0 0 12px 0;
+            letter-spacing: 2px;
+        }
+
+        .caja-viernes .texto-pista {
+            display: block;
+            font-size: 0.9em;
+            margin-top: 8px;
+            color: #f9e6cf;
+        }
+        
+        .boton-spotify {
+            color: #cc2b2b; 
+            text-decoration: none; 
+            font-weight: bold; 
+            border: 1px solid #cc2b2b; 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            display: inline-block; 
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="titulo-principal">Cuenta <span>Atrás</span></div>
+
+    <!-- ZONA DE SCROLL LATERAL -->
+    <div class="contenedor-dias">
+        
+        <div class="caja-dia" id="caja-lunes">
+            <h2>LUNES 13</h2>
+            <div id="candado-13" class="candado">🔒</div>
+            <div id="texto-13" class="texto-pista">
+                <i>Pista 1 - Lunes 🔓</i><br><br>
+                Empezamos la semana chill pero con deberes. Ponte los cascos, dale al play y lee muy bien los títulos de las primeras canciones... hay un mensaje escondido para ti.<br>
+                <!-- OJO: Cambia este enlace por el tuyo de Spotify -->
+                <a href="AQUI_PONES_EL_LINK_DE_SPOTIFY" class="boton-spotify">🎧 Abrir Playlist</a>
+            </div>
+        </div>
+
+        <div class="caja-dia" id="caja-martes">
+            <h2>MARTES 14</h2>
+            <div id="candado-14" class="candado">🔒</div>
+            <div id="texto-14" class="texto-pista">
+                <i>Pista 2 - Martes 🔓</i><br><br>
+                (Aquí meteremos la pista del martes)
+            </div>
+        </div>
+
+        <div class="caja-dia" id="caja-miercoles">
+            <h2>MIÉRCOLES 15</h2>
+            <div id="candado-15" class="candado">🔒</div>
+            <div id="texto-15" class="texto-pista">
+                <i>Pista 3 - Miércoles 🔓</i><br><br>
+                (Aquí meteremos la pista del miércoles)
+            </div>
+        </div>
+
+        <div class="caja-dia" id="caja-jueves">
+            <h2>JUEVES 16</h2>
+            <div id="candado-16" class="candado">🔒</div>
+            <div id="texto-16" class="texto-pista">
+                <i>Pista 4 - Jueves 🔓</i><br><br>
+                (Aquí meteremos las instrucciones del jueves)
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CAJA DEL VIERNES -->
+    <div class="contenedor-viernes">
+        <div class="caja-viernes" id="caja-viernes">
+            <h2>VIERNES 17</h2>
+            <div id="candado-17" class="candado">🔒</div>
+            <div id="texto-17" class="texto-pista">
+                <i>El hilo rojo está a punto de tensarse...</i>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOTOR DEL TIEMPO -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const ahora = new Date();
+
+            // Fechas de desbloqueo (Año, Mes [0-11], Día, Hora, Minutos)
+            // Julio es el mes 6 en JavaScript
+            const fechas = {
+                13: new Date(2026, 6, 13, 0, 0, 0),
+                14: new Date(2026, 6, 14, 0, 0, 0),
+                15: new Date(2026, 6, 15, 0, 0, 0),
+                16: new Date(2026, 6, 16, 0, 0, 0),
+                17: new Date(2026, 6, 17, 0, 0, 0)
+            };
+
+            // Función para comprobar y desbloquear
+            function comprobarDesbloqueos() {
+                for (let dia = 13; dia <= 17; dia++) {
+                    if (ahora >= fechas[dia]) {
+                        document.getElementById('candado-' + dia).style.display = 'none';
+                        document.getElementById('texto-' + dia).style.display = 'block';
+                    }
+                }
+            }
+
+            comprobarDesbloqueos();
+        });
+    </script>
+
+</body>
+</html>
