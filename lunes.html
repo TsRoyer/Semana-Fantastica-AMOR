@@ -19,13 +19,12 @@
             padding: 20px;
             box-sizing: border-box;
             text-align: center;
-            overflow: hidden;
         }
 
         h1 { color: #cc2b2b; font-size: 1.8em; margin-bottom: 10px; }
         p { font-size: 1em; margin-bottom: 20px; color: #f9e6cf; }
 
-        /* JUEGO 1: CORAZÓN */
+        /* --- NIVEL 1: CORAZÓN --- */
         #zona-juego-1 {
             display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 300px;
         }
@@ -38,45 +37,65 @@
         }
         #barra-amor { height: 100%; width: 0%; background-color: #cc2b2b; transition: width 0.1s linear; }
 
-        /* JUEGO 2: DINO OPTIMIZADO */
+
+        /* --- NIVEL 2: MEMORIA (MODO 4x6) --- */
         #zona-juego-2 {
             display: none; 
             width: 100%; max-width: 400px;
         }
-        #marcador { font-size: 1.5em; color: #cc2b2b; margin-bottom: 15px; font-weight: bold; }
-        
-        #pantalla-dino {
-            width: 100%; height: 200px; border-bottom: 3px solid rgba(253, 250, 246, 0.3); position: relative; overflow: hidden; background: rgba(0,0,0,0.1); border-radius: 10px 10px 0 0;
-            -webkit-tap-highlight-color: transparent; 
-        }
-        
-        #jugador {
-            position: absolute; bottom: 0; left: 30px; font-size: 3em; line-height: 1; z-index: 2;
-        }
-        
-        /* Posiciones fijas, el movimiento se hace por Transform (GPU) */
-        #obstaculo-suelo {
-            position: absolute; bottom: 0; right: -100px; font-size: 2.5em; line-height: 1; z-index: 1;
-        }
-        
-        #obstaculo-aire {
-            position: absolute; bottom: 90px; right: -100px; font-size: 2.8em; line-height: 1; z-index: 1;
+
+        .tablero-memoria {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columnas para que quepan bien */
+            gap: 8px; /* Hueco más pequeñito */
+            margin: 0 auto;
+            width: 100%;
+            max-width: 340px;
+            perspective: 1000px; 
         }
 
-        /* Salto optimizado con GPU */
-        .animacion-salto {
-            animation: saltoJugador 0.6s ease-out forwards;
+        .carta {
+            width: 100%;
+            aspect-ratio: 1 / 1.1;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        @keyframes saltoJugador {
-            0% { transform: translate3d(0, 0, 0); }
-            40% { transform: translate3d(0, -95px, 0); }
-            50% { transform: translate3d(0, -100px, 0); }
-            60% { transform: translate3d(0, -95px, 0); }
-            100% { transform: translate3d(0, 0, 0); }
+        .carta.volteada {
+            transform: rotateY(180deg);
         }
 
-        /* PREMIO FINAL */
+        .carta-cara, .carta-dorso {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; 
+            -webkit-backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.6em; /* Emojis un poco más pequeños para no desbordar */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .carta-dorso {
+            background: rgba(253, 250, 246, 0.1);
+            border: 1px solid rgba(204, 43, 43, 0.4);
+            color: rgba(204, 43, 43, 0.7);
+            font-size: 1.4em; 
+        }
+
+        .carta-cara {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #cc2b2b;
+            transform: rotateY(180deg);
+        }
+
+        /* --- PREMIO FINAL --- */
         #zona-premio {
             display: none; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(204, 43, 43, 0.5); border-radius: 15px; padding: 30px 20px; box-shadow: 0 10px 25px rgba(204, 43, 43, 0.15); animation: aparecer 1s ease forwards;
         }
@@ -88,6 +107,7 @@
 </head>
 <body>
 
+    <!-- NIVEL 1 -->
     <div id="zona-juego-1">
         <h1>Nivel 1: Conexión inestable</h1>
         <p>El hilo se afloja... Toca el corazón a toda velocidad para estabilizarlo.</p>
@@ -97,21 +117,17 @@
         </div>
     </div>
 
+    <!-- NIVEL 2 -->
     <div id="zona-juego-2">
-        <h1>Nivel 2: Esquiva el drama</h1>
-        <p>Salta el desamor (💔), pero <b>no saltes</b> si pasa la tormenta (🌩️).</p>
-        <div id="marcador">Puntos: <span id="puntos-texto">0</span> / 200</div>
-        
-        <div id="pantalla-dino" onmousedown="saltar()" ontouchstart="saltar(event)">
-            <div id="jugador">🦖</div>
-            <div id="obstaculo-suelo">💔</div>
-            <div id="obstaculo-aire">🌩️</div>
-        </div>
+        <h1>Nivel 2: Los Recuerdos</h1>
+        <p>Encuentra las parejas para desbloquear tu recompensa.</p>
+        <div class="tablero-memoria" id="tablero"></div>
     </div>
 
+    <!-- PREMIO -->
     <div id="zona-premio">
         <h1>¡Prueba superada!</h1>
-        <p>Qué locura de reflejos... Empezamos la semana chill pero con deberes. Ponte los cascos, dale al play y lee muy bien los títulos de las primeras canciones... hay un mensaje escondido para ti.</p>
+        <p>Empezamos la semana chill pero con deberes. Ponte los cascos, dale al play y lee muy bien los títulos de las primeras canciones... hay un mensaje escondido para ti.</p>
         
         <!-- OJO: PON TU LINK DE SPOTIFY AQUI -->
         <a href="TU_LINK_DE_SPOTIFY_AQUI" class="boton-spotify">🎧 Abrir Playlist Secreta</a>
@@ -119,7 +135,9 @@
     </div>
 
     <script>
-        // --- LOGICA JUEGO 1 ---
+        // ==========================================
+        // LÓGICA JUEGO 1: CORAZÓN
+        // ==========================================
         let progreso = 0;
         let juego1Ganado = false;
         let intervaloDrenaje = null;
@@ -158,111 +176,89 @@
             }
         }
 
-        // --- LOGICA JUEGO 2 OPTIMIZADA (60 FPS) ---
-        let dinoGanado = false;
-        let estaSaltando = false;
-        let loopJuego;
-        
-        let puntosFicticios = 0;
-        let puntosReales = 0;
-        let velBase = 4; // Velocidad fija
-        
-        let posSuelo = -100;
-        let posAire = -400; 
 
-        // Cacheamos las variables para no saturar la memoria del móvil
-        let elPantalla, elJugador, elObsSuelo, elObsAire, anchoPantalla, elPuntos;
+        // ==========================================
+        // LÓGICA JUEGO 2: MEMORIA (24 CARTAS)
+        // ==========================================
+        // 12 emojis distintos que representan citas, viajes, etc.
+        const emojis = ['🧶', '🎧', '📸', '✈️', '🍕', '🔒', '🍷', '🍿', '🌍', '💌', '🧸', '✨'];
+        
+        let cartasArray = [...emojis, ...emojis]; 
+        
+        let primeraCarta = null;
+        let segundaCarta = null;
+        let bloquearTablero = false;
+        let parejasEncontradas = 0;
 
         function iniciarNivel2() {
-            elPantalla = document.getElementById('pantalla-dino');
-            elJugador = document.getElementById('jugador');
-            elObsSuelo = document.getElementById('obstaculo-suelo');
-            elObsAire = document.getElementById('obstaculo-aire');
-            elPuntos = document.getElementById('puntos-texto');
-            anchoPantalla = elPantalla.clientWidth; // Se calcula solo una vez
-
             document.getElementById('zona-juego-2').style.display = 'block';
-            loopJuego = requestAnimationFrame(motorJuego2);
-        }
-
-        function saltar(e) {
-            if (e) e.preventDefault(); 
-            if (dinoGanado || estaSaltando) return;
             
-            estaSaltando = true;
-            elJugador.classList.add('animacion-salto');
-            
-            setTimeout(() => {
-                elJugador.classList.remove('animacion-salto');
-                estaSaltando = false;
-            }, 600); 
-        }
-
-        function motorJuego2() {
-            if (dinoGanado) return;
-
-            // Movemos las posiciones lógicas
-            posSuelo += velBase;
-            posAire += velBase;
-
-            if (posSuelo > anchoPantalla + 50) {
-                let distanciaMinima = posAire - 250; 
-                posSuelo = Math.min(-50 - (Math.random() * 200), distanciaMinima);
+            for (let i = cartasArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cartasArray[i], cartasArray[j]] = [cartasArray[j], cartasArray[i]];
             }
 
-            if (posAire > anchoPantalla + 100) {
-                let distanciaMinima = posSuelo - 250;
-                posAire = Math.min(-50 - (Math.random() * 300), distanciaMinima);
+            const tablero = document.getElementById('tablero');
+            
+            cartasArray.forEach(emoji => {
+                const carta = document.createElement('div');
+                carta.classList.add('carta');
+                carta.dataset.emoji = emoji; 
+
+                carta.innerHTML = `
+                    <div class="carta-dorso">?</div>
+                    <div class="carta-cara">${emoji}</div>
+                `;
+
+                carta.addEventListener('click', voltearCarta);
+                tablero.appendChild(carta);
+            });
+        }
+
+        function voltearCarta() {
+            if (bloquearTablero) return;
+            if (this === primeraCarta) return;
+
+            this.classList.add('volteada');
+
+            if (!primeraCarta) {
+                primeraCarta = this;
+                return;
             }
 
-            // Aplicamos movimiento usando la GPU del móvil
-            elObsSuelo.style.transform = `translate3d(-${posSuelo}px, 0, 0)`;
-            elObsAire.style.transform = `translate3d(-${posAire}px, 0, 0)`;
+            segundaCarta = this;
+            comprobarPareja();
+        }
 
-            // Colisiones
-            let jRect = elJugador.getBoundingClientRect();
-            let oSueloRect = elObsSuelo.getBoundingClientRect();
-            let oAireRect = elObsAire.getBoundingClientRect();
+        function comprobarPareja() {
+            let coinciden = primeraCarta.dataset.emoji === segundaCarta.dataset.emoji;
 
-            let choqueSuelo = (
-                jRect.right > oSueloRect.left + 15 && 
-                jRect.left < oSueloRect.right - 15 && 
-                jRect.bottom > oSueloRect.top + 15
-            );
-
-            let choqueAire = (
-                jRect.right > oAireRect.left + 15 && 
-                jRect.left < oAireRect.right - 15 && 
-                jRect.top < oAireRect.bottom - 15
-            );
-
-            if (choqueSuelo || choqueAire) {
-                puntosFicticios = 0;
-                puntosReales = 0;
-                elPuntos.innerText = 0;
+            if (coinciden) {
+                primeraCarta.removeEventListener('click', voltearCarta);
+                segundaCarta.removeEventListener('click', voltearCarta);
+                resetearTablero();
                 
-                posSuelo = -100;
-                posAire = -450;
+                parejasEncontradas++;
                 
-                elPantalla.style.backgroundColor = 'rgba(204, 43, 43, 0.4)';
-                setTimeout(() => { elPantalla.style.backgroundColor = 'rgba(0,0,0,0.1)'; }, 150);
-            } else {
-                puntosFicticios += 0.15; 
-                puntosReales = Math.floor(puntosFicticios);
-                elPuntos.innerText = puntosReales;
-
-                if (puntosReales >= 200) {
-                    dinoGanado = true;
-                    
+                // Ahora tiene que encontrar las 12 parejas para ganar
+                if (parejasEncontradas === 12) {
                     setTimeout(() => {
                         document.getElementById('zona-juego-2').style.display = 'none';
                         document.getElementById('zona-premio').style.display = 'block';
-                    }, 500);
-                    return; 
+                    }, 800);
                 }
+            } else {
+                bloquearTablero = true;
+                setTimeout(() => {
+                    primeraCarta.classList.remove('volteada');
+                    segundaCarta.classList.remove('volteada');
+                    resetearTablero();
+                }, 1000);
             }
+        }
 
-            loopJuego = requestAnimationFrame(motorJuego2);
+        function resetearTablero() {
+            [primeraCarta, segundaCarta, bloquearTablero] = [null, null, false];
         }
     </script>
 </body>
