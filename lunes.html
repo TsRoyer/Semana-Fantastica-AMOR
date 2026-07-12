@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misión del Lunes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #412b0e;
+            color: #fdfaf6;
+            font-family: 'Playfair Display', serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        h1 { color: #cc2b2b; font-size: 1.8em; margin-bottom: 10px; }
+        p { font-size: 1em; margin-bottom: 20px; color: #f9e6cf; }
+
+        /* JUEGO 1: CORAZÓN */
+        #zona-juego-1 {
+            display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 300px;
+        }
+        #corazon-juego {
+            font-size: 5em; cursor: pointer; user-select: none; transition: transform 0.05s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .contenedor-barra {
+            width: 100%; height: 20px; background-color: rgba(253, 250, 246, 0.15); border-radius: 10px; margin-top: 30px; border: 1px solid rgba(204, 43, 43, 0.5); overflow: hidden;
+        }
+        #barra-amor { height: 100%; width: 0%; background-color: #cc2b2b; transition: width 0.1s linear; }
+
+        /* JUEGO 2: DINO MODO HARDCORE */
+        #zona-juego-2 {
+            display: none; 
+            width: 100%; max-width: 400px;
+        }
+        #marcador { font-size: 1.5em; color: #cc2b2b; margin-bottom: 15px; font-weight: bold; }
+        
+        #pantalla-dino {
+            width: 100%; height: 200px; border-bottom: 3px solid rgba(253, 250, 246, 0.3); position: relative; overflow: hidden; background: rgba(0,0,0,0.1); border-radius: 10px 10px 0 0;
+            -webkit-tap-highlight-color: transparent; 
+        }
+        
+        #jugador {
+            position: absolute; bottom: 0; left: 30px; font-size: 3em; line-height: 1; z-index: 2;
+        }
+        
+        /* Obstáculos (ahora los movemos con JS, no con CSS) */
+        #obstaculo-suelo {
+            position: absolute; bottom: 0; right: -100px; font-size: 2.5em; line-height: 1; z-index: 1;
+        }
+        
+        #obstaculo-aire {
+            position: absolute; bottom: 90px; right: -100px; font-size: 2.8em; line-height: 1; z-index: 1;
+        }
+
+        /* Solo dejamos la animación del salto en CSS */
+        .animacion-salto {
+            animation: saltoJugador 0.6s ease-out forwards;
+        }
+
+        @keyframes saltoJugador {
+            0% { bottom: 0; }
+            40% { bottom: 95px; }
+            50% { bottom: 100px; }
+            60% { bottom: 95px; }
+            100% { bottom: 0; }
+        }
+
+        /* PREMIO FINAL */
+        #zona-premio {
+            display: none; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(204, 43, 43, 0.5); border-radius: 15px; padding: 30px 20px; box-shadow: 0 10px 25px rgba(204, 43, 43, 0.15); animation: aparecer 1s ease forwards;
+        }
+        @keyframes aparecer { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .boton-spotify { color: #cc2b2b; text-decoration: none; font-weight: bold; border: 1px solid #cc2b2b; padding: 12px 24px; border-radius: 8px; display: inline-block; margin-top: 20px; font-size: 1.1em; background-color: rgba(204, 43, 43, 0.1); }
+        .boton-volver { color: #fdfaf6; text-decoration: underline; font-size: 0.9em; margin-top: 30px; display: block; }
+    </style>
+</head>
+<body>
+
+    <div id="zona-juego-1">
+        <h1>Nivel 1: Conexión inestable</h1>
+        <p>El hilo se afloja... Toca el corazón a toda velocidad para estabilizarlo.</p>
+        <div id="corazon-juego" onclick="tocarCorazon()">❤️</div>
+        <div class="contenedor-barra">
+            <div id="barra-amor"></div>
+        </div>
+    </div>
+
+    <div id="zona-juego-2">
+        <h1>Nivel 2: Esquiva el drama</h1>
+        <p>Salta el desamor (💔), pero <b>no saltes</b> si pasa la tormenta (🌩️). ¡Cada vez va más rápido!</p>
+        <div id="marcador">Puntos: <span id="puntos-texto">0</span> / 200</div>
+        
+        <div id="pantalla-dino" onmousedown="saltar()" ontouchstart="saltar(event)">
+            <div id="jugador">🦖</div>
+            <div id="obstaculo-suelo">💔</div>
+            <div id="obstaculo-aire">🌩️</div>
+        </div>
+    </div>
+
+    <div id="zona-premio">
+        <h1>¡Prueba superada!</h1>
+        <p>Qué locura de reflejos... Empezamos la semana chill pero con deberes. Ponte los cascos, dale al play y lee muy bien los títulos de las primeras canciones... hay un mensaje escondido para ti.</p>
+        
+        <!-- OJO: PON TU LINK DE SPOTIFY AQUI -->
+        <a href="https://open.spotify.com/playlist/6GywYteYPB5QxQvx7agk1T?si=c89b5f0e1d2f4a5f" class="boton-spotify">🎧 Abrir Playlist Secreta</a>
+        <a href="index.html" class="boton-volver">Volver a los días</a>
+    </div>
+
+    <script>
+        // --- LOGICA JUEGO 1 ---
+        let progreso = 0;
+        let juego1Ganado = false;
+        let intervaloDrenaje = null;
+
+        function actualizarBarra() { document.getElementById('barra-amor').style.width = progreso + '%'; }
+
+        function iniciarDrenaje() {
+            if (intervaloDrenaje) return;
+            intervaloDrenaje = setInterval(() => {
+                if (progreso > 0 && !juego1Ganado) {
+                    progreso -= 2.5; 
+                    if (progreso < 0) progreso = 0;
+                    actualizarBarra();
+                }
+            }, 50);
+        }
+
+        function tocarCorazon() {
+            if (juego1Ganado) return;
+            iniciarDrenaje();
+            progreso += 12; 
+            if (progreso > 100) progreso = 100;
+            actualizarBarra();
+            
+            let corazon = document.getElementById('corazon-juego');
+            corazon.style.transform = 'scale(1.2)';
+            setTimeout(() => { corazon.style.transform = 'scale(1)'; }, 50);
+
+            if (progreso >= 100) {
+                juego1Ganado = true;
+                clearInterval(intervaloDrenaje);
+                setTimeout(() => {
+                    document.getElementById('zona-juego-1').style.display = 'none';
+                    iniciarNivel2();
+                }, 400);
+            }
+        }
+
+        // --- LOGICA JUEGO 2 (MOTOR FÍSICO REAL) ---
+        let dinoGanado = false;
+        let estaSaltando = false;
+        let loopJuego;
+        
+        // Variables de físicas
+        let puntosFicticios = 0;
+        let puntosReales = 0;
+        let velBase = 4; // Velocidad inicial
+        
+        // Posiciones iniciales (fuera de la pantalla por la derecha)
+        let posSuelo = -100;
+        let posAire = -400; // La nube sale un poco después
+
+        function iniciarNivel2() {
+            document.getElementById('zona-juego-2').style.display = 'block';
+            loopJuego = requestAnimationFrame(motorJuego2);
+        }
+
+        function saltar(e) {
+            if (e) e.preventDefault(); // Evita scroll raro en móviles al tocar
+            if (dinoGanado || estaSaltando) return;
+            
+            let jugador = document.getElementById('jugador');
+            estaSaltando = true;
+            jugador.classList.add('animacion-salto');
+            
+            setTimeout(() => {
+                jugador.classList.remove('animacion-salto');
+                estaSaltando = false;
+            }, 600); 
+        }
+
+        function motorJuego2() {
+            if (dinoGanado) return;
+
+            let pantalla = document.getElementById('pantalla-dino');
+            let anchoPantalla = pantalla.clientWidth;
+            
+            // LA DIFICULTAD: La velocidad sube según los puntos
+// LA DIFICULTAD: Velocidad fija para que no sufra tanto
+            let velocidadActual = velBase;
+
+            // Movemos los obstáculos
+            posSuelo += velocidadActual;
+            posAire += velocidadActual;
+
+            // LÓGICA DE APARICIÓN IRREGULAR
+            if (posSuelo > anchoPantalla + 50) {
+                // Si el corazón roto sale de la pantalla, lo reseteamos.
+                // Math.min asegura que SIEMPRE aparezca al menos 250px detrás de la nube.
+                let distanciaMinima = posAire - 250; 
+                posSuelo = Math.min(-50 - (Math.random() * 200), distanciaMinima);
+            }
+
+            if (posAire > anchoPantalla + 100) {
+                // Lo mismo para la nube tóxica
+                let distanciaMinima = posSuelo - 250;
+                posAire = Math.min(-50 - (Math.random() * 300), distanciaMinima);
+            }
+
+            // Aplicamos el movimiento visual
+            let obsSuelo = document.getElementById('obstaculo-suelo');
+            let obsAire = document.getElementById('obstaculo-aire');
+            
+            obsSuelo.style.right = posSuelo + 'px';
+            obsAire.style.right = posAire + 'px';
+
+            // SISTEMA DE COLISIONES
+            let jugador = document.getElementById('jugador');
+            let jRect = jugador.getBoundingClientRect();
+            let oSueloRect = obsSuelo.getBoundingClientRect();
+            let oAireRect = obsAire.getBoundingClientRect();
+
+            // Choques
+            let choqueSuelo = (
+                jRect.right > oSueloRect.left + 15 && 
+                jRect.left < oSueloRect.right - 15 && 
+                jRect.bottom > oSueloRect.top + 15
+            );
+
+            let choqueAire = (
+                jRect.right > oAireRect.left + 15 && 
+                jRect.left < oAireRect.right - 15 && 
+                jRect.top < oAireRect.bottom - 15
+            );
+
+            if (choqueSuelo || choqueAire) {
+                // FALLO: Castigo y reseteo
+                puntosFicticios = 0;
+                puntosReales = 0;
+                document.getElementById('puntos-texto').innerText = 0;
+                
+                // Separamos los obstáculos otra vez para darle un respiro
+                posSuelo = -100;
+                posAire = -450;
+                
+                pantalla.style.backgroundColor = 'rgba(204, 43, 43, 0.4)';
+                setTimeout(() => { pantalla.style.backgroundColor = 'rgba(0,0,0,0.1)'; }, 150);
+            } else {
+                // Va sumando puntos súper despacio (cada frame)
+                puntosFicticios += 0.15; 
+                puntosReales = Math.floor(puntosFicticios);
+                document.getElementById('puntos-texto').innerText = puntosReales;
+
+                // SI GANA
+                if (puntosReales >= 200) {
+                    dinoGanado = true;
+                    
+                    setTimeout(() => {
+                        document.getElementById('zona-juego-2').style.display = 'none';
+                        document.getElementById('zona-premio').style.display = 'block';
+                    }, 500);
+                    return; // Cortamos el bucle
+                }
+            }
+
+            // Repetimos el frame (Bucle infinito del juego)
+            loopJuego = requestAnimationFrame(motorJuego2);
+        }
+    </script>
+</body>
+</html>

@@ -14,6 +14,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             margin: 0;
             padding: 24px 0 40px;
             box-sizing: border-box;
@@ -38,10 +39,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 14px;
             width: 100%;
-            max-width: 600px;
-            padding: 14px 16px 24px 16px;
+            max-width: 640px;
+            padding: 20px 16px 24px 16px;
             box-sizing: border-box;
             flex-wrap: wrap;
         }
@@ -49,18 +50,17 @@
         .contenedor-dias::before {
             content: '';
             position: absolute;
-            left: 5%;
-            right: 5%; /* Esto limita el ancho para que solo pase por detrás de los 4 días */
+            left: 2%;
+            right: 2%;
             top: 50%;
-            height: 86px;
+            height: 120px;
             transform: translateY(-50%);
             z-index: 0;
             pointer-events: none;
-            /* SVG con stroke-dasharray para las rayas */
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120'%3E%3Cpath d='M8 62 C42 26, 92 20, 126 48 C156 72, 188 80, 220 63 C249 48, 284 34, 320 48 C346 58, 372 66, 392 56' stroke='%23cc2b2b' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-dasharray='10, 10'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 140'%3E%3Cpath d='M8 78 C38 38, 86 24, 126 54 C158 80, 188 92, 220 83 C250 76, 286 54, 320 66 C347 76, 372 92, 392 84' stroke='%23cc2b2b' stroke-width='3.2' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-dasharray='10, 10'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-size: 100% 100%;
-            opacity: 0.9;
+            opacity: 0.95;
         }
 
         @media (max-width: 768px) {
@@ -232,13 +232,24 @@
         </div>
     </div>
 
-    <!-- MOTOR DEL TIEMPO -->
+    <!-- MODAL DE DÍA BLOQUEADO (Con puerta trasera secreta) -->
+    <div id="modal-bloqueado" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
+        <div style="background: #412b0e; border: 1px solid rgba(204, 43, 43, 0.5); border-radius: 15px; padding: 30px 20px; text-align: center; max-width: 350px; width: 100%; box-shadow: 0 10px 25px rgba(204, 43, 43, 0.5);">
+            <h2 style="color: #cc2b2b; margin-top: 0; font-size: 1.8em;">🔒 Bloqueado</h2>
+            <p id="texto-modal-fecha" style="color: #f9e6cf; margin-bottom: 25px; font-size: 1.1em;"></p>
+            
+            <!-- Input de contraseña -->
+            <input type="password" id="input-pass" placeholder="Ingresar contraseña" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(253, 250, 246, 0.2); color: #fdfaf6; padding: 12px; border-radius: 8px; width: 80%; margin-bottom: 15px; text-align: center; font-family: 'Playfair Display', serif; font-size: 1em; outline: none;">
+            <br>
+            <button onclick="document.getElementById('modal-bloqueado').style.display='none'" style="background: transparent; color: #fdfaf6; border: none; text-decoration: underline; font-size: 1em; cursor: pointer; padding: 10px;">Volver a los días</button>
+        </div>
+    </div>
+
+    <!-- MOTOR DEL TIEMPO Y PUERTA TRASERA -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const ahora = new Date();
 
-            // Fechas de desbloqueo (Año, Mes [0-11], Día, Hora, Minutos)
-            // Julio es el mes 6 en JavaScript
             const fechas = {
                 13: new Date(2026, 6, 13, 0, 0, 0),
                 14: new Date(2026, 6, 14, 0, 0, 0),
@@ -247,17 +258,58 @@
                 17: new Date(2026, 6, 17, 0, 0, 0)
             };
 
-            // Función para comprobar y desbloquear
-            function comprobarDesbloqueos() {
-                for (let dia = 13; dia <= 17; dia++) {
-                    if (ahora >= fechas[dia]) {
-                        document.getElementById('candado-' + dia).style.display = 'none';
-                        document.getElementById('texto-' + dia).style.display = 'block';
-                    }
+            const nombresDias = {
+                13: "Lunes 13", 14: "Martes 14", 15: "Miércoles 15", 16: "Jueves 16", 17: "Viernes 17"
+            };
+
+            let diaAProbar = null; // Variable para saber qué día estamos intentando hackear
+
+            // ESTA FUNCIÓN HACE LA MAGIA DE ABRIR LA CAJA
+            function forzarDesbloqueo(dia) {
+                document.getElementById('candado-' + dia).style.display = 'none';
+                let texto = document.getElementById('texto-' + dia);
+                texto.style.display = 'block';
+
+                // Si es lunes, le metemos el enlace al juego
+                if (dia === 13) {
+                    let caja = document.getElementById('caja-lunes');
+                    caja.style.cursor = 'pointer';
+                    caja.onclick = function() { window.location.href = 'lunes.html'; };
+                    texto.innerHTML = "<i>Pista 1 - Lunes 🔓</i><br><br>Tienes una misión pendiente...<br><br><b>Toca esta caja para jugar 🎮</b>";
+                }
+                
+                // Quitamos el click de bloqueo para que ya no salga el modal molesto
+                let cajaId = (dia === 17) ? 'caja-viernes' : 'caja-' + ['lunes','martes','miercoles','jueves'][dia-13];
+                document.getElementById(cajaId).onclick = (dia === 13) ? function() { window.location.href = 'lunes.html'; } : null;
+            }
+
+            // COMPROBACIÓN INICIAL (lo que pasa al cargar la web)
+            for (let dia = 13; dia <= 17; dia++) {
+                let cajaId = (dia === 17) ? 'caja-viernes' : 'caja-' + ['lunes','martes','miercoles','jueves'][dia-13];
+                let caja = document.getElementById(cajaId);
+
+                if (ahora >= fechas[dia]) {
+                    // Si ya es el día, se abre normal
+                    forzarDesbloqueo(dia);
+                } else {
+                    // Si está bloqueado, al tocar sale el modal
+                    caja.style.cursor = 'pointer';
+                    caja.onclick = function() {
+                        diaAProbar = dia;
+                        document.getElementById('texto-modal-fecha').innerText = `Se desbloquea a las 00:00:00 del ${nombresDias[dia]}.`;
+                        document.getElementById('modal-bloqueado').style.display = 'flex';
+                        document.getElementById('input-pass').value = ''; // Limpiamos la pass por si acaso
+                    };
                 }
             }
 
-            comprobarDesbloqueos();
+            // DETECTAR LA CONTRASEÑA EN TIEMPO REAL
+            document.getElementById('input-pass').addEventListener('input', function(e) {
+                if (e.target.value === 'RaulySara2466') {
+                    document.getElementById('modal-bloqueado').style.display = 'none'; // Cerramos el modal
+                    forzarDesbloqueo(diaAProbar); // Hackeamos el sistema
+                }
+            });
         });
     </script>
 
