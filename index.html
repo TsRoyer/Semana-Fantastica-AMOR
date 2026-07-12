@@ -262,6 +262,15 @@
                 13: "Lunes 13", 14: "Martes 14", 15: "Miércoles 15", 16: "Jueves 16", 17: "Viernes 17"
             };
 
+            // DICCIONARIO DE CONTRASEÑAS SECRETAS PARA CADA DÍA
+            const contrasenas = {
+                13: 'RaulySara2466',
+                14: 'RaulySara2467',
+                15: 'RaulySara2468',
+                16: 'RaulySara2469',
+                17: 'Qing You Du Zhong'
+            };
+
             let diaAProbar = null; // Variable para saber qué día estamos intentando hackear
 
             // ESTA FUNCIÓN HACE LA MAGIA DE ABRIR LA CAJA
@@ -303,9 +312,10 @@
                 }
             }
 
-            // DETECTAR LA CONTRASEÑA EN TIEMPO REAL
+            // DETECTAR LA CONTRASEÑA EN TIEMPO REAL SEGÚN EL DÍA
             document.getElementById('input-pass').addEventListener('input', function(e) {
-                if (e.target.value === 'RaulySara2466') {
+                // Comprobamos si el texto introducido coincide con la contraseña del día seleccionado
+                if (diaAProbar && e.target.value === contrasenas[diaAProbar]) {
                     document.getElementById('modal-bloqueado').style.display = 'none'; // Cerramos el modal
                     forzarDesbloqueo(diaAProbar); // Hackeamos el sistema
                 }

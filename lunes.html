@@ -46,8 +46,8 @@
 
         .tablero-memoria {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 columnas para que quepan bien */
-            gap: 8px; /* Hueco más pequeñito */
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 8px; 
             margin: 0 auto;
             width: 100%;
             max-width: 340px;
@@ -77,7 +77,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.6em; /* Emojis un poco más pequeños para no desbordar */
+            font-size: 1.6em; 
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
@@ -124,13 +124,21 @@
         <div class="tablero-memoria" id="tablero"></div>
     </div>
 
-    <!-- PREMIO -->
+    <!-- PREMIO CON LA SÍLABA -->
     <div id="zona-premio">
         <h1>¡Prueba superada!</h1>
-        <p>Empezamos la semana chill pero con deberes. Ponte los cascos, dale al play y lee muy bien los títulos de las primeras canciones... hay un mensaje escondido para ti.</p>
+        <p>Empezamos la semana pero con deberes. Ponte los cascos, dale al play. Lee muy bien los títulos de las canciones... hay un mensaje oculto te espera.</p>
+        
+        <!-- PISTA SECRETA RECOPILATORIA -->
+        <div style="background: rgba(204, 43, 43, 0.1); border: 2px dashed #cc2b2b; padding: 20px; border-radius: 10px; margin: 25px 0;">
+            <p style="margin: 0; font-size: 1em; letter-spacing: 2px; color: #f9e6cf; font-weight: bold;">GUARDA ESTA SÍLABA:</p>
+            <div style="font-size: 3.5em; margin-top: 10px; color: #cc2b2b; font-weight: bold; line-height: 1;">
+                情 <span style="font-size: 0.35em; color: #fdfaf6; vertical-align: middle;">(Qíng)</span>
+            </div>
+        </div>
         
         <!-- OJO: PON TU LINK DE SPOTIFY AQUI -->
-        <a href="TU_LINK_DE_SPOTIFY_AQUI" class="boton-spotify">🎧 Abrir Playlist Secreta</a>
+        <a href="https://open.spotify.com/playlist/6GywYteYPB5QxQvx7agk1T?si=4d4f71b4f5134f65" class="boton-spotify">🎧 Abrir Playlist Secreta</a>
         <a href="index.html" class="boton-volver">Volver a los días</a>
     </div>
 
@@ -180,9 +188,7 @@
         // ==========================================
         // LÓGICA JUEGO 2: MEMORIA (24 CARTAS)
         // ==========================================
-        // 12 emojis distintos que representan citas, viajes, etc.
         const emojis = ['🧶', '🎧', '📸', '✈️', '🍕', '🔒', '🍷', '🍿', '🌍', '💌', '🧸', '✨'];
-        
         let cartasArray = [...emojis, ...emojis]; 
         
         let primeraCarta = null;
@@ -240,7 +246,6 @@
                 
                 parejasEncontradas++;
                 
-                // Ahora tiene que encontrar las 12 parejas para ganar
                 if (parejasEncontradas === 12) {
                     setTimeout(() => {
                         document.getElementById('zona-juego-2').style.display = 'none';
