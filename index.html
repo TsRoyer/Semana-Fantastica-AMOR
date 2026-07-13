@@ -245,11 +245,12 @@
         </div>
     </div>
 
-    <!-- MOTOR DEL TIEMPO Y PUERTA TRASERA -->
+<!-- MOTOR DEL TIEMPO Y PUERTA TRASERA -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const ahora = new Date();
 
+            // Las fechas reales en las que se abre cada día
             const fechas = {
                 13: new Date(2026, 6, 13, 0, 0, 0),
                 14: new Date(2026, 6, 14, 0, 0, 0),
@@ -262,7 +263,7 @@
                 13: "Lunes 13", 14: "Martes 14", 15: "Miércoles 15", 16: "Jueves 16", 17: "Viernes 17"
             };
 
-            // DICCIONARIO DE CONTRASEÑAS SECRETAS PARA CADA DÍA
+            // DICCIONARIO DE CONTRASEÑAS SECRETAS (Tu puerta trasera)
             const contrasenas = {
                 13: 'RaulySara2466',
                 14: 'RaulySara2467',
@@ -271,53 +272,62 @@
                 17: 'Qing You Du Zhong'
             };
 
-            let diaAProbar = null; // Variable para saber qué día estamos intentando hackear
+            let diaAProbar = null; 
 
-            // ESTA FUNCIÓN HACE LA MAGIA DE ABRIR LA CAJA
+            // ESTA FUNCIÓN HACE LA MAGIA DE ABRIR LA CAJA Y PONER EL LINK
             function forzarDesbloqueo(dia) {
                 document.getElementById('candado-' + dia).style.display = 'none';
                 let texto = document.getElementById('texto-' + dia);
                 texto.style.display = 'block';
 
-                // Si es lunes, le metemos el enlace al juego
+                // Enlace del Lunes
                 if (dia === 13) {
                     let caja = document.getElementById('caja-lunes');
                     caja.style.cursor = 'pointer';
-                    caja.onclick = function() { window.location.href = 'lunes.html'; };
                     texto.innerHTML = "<i>Pista 1 - Lunes 🔓</i><br><br>Tienes una misión pendiente...<br><br><b>Toca esta caja para jugar 🎮</b>";
                 }
                 
-                // Quitamos el click de bloqueo para que ya no salga el modal molesto
+                // NUEVO: Enlace del Martes
+                if (dia === 14) {
+                    let caja = document.getElementById('caja-martes');
+                    caja.style.cursor = 'pointer';
+                    texto.innerHTML = "<i>Pista 2 - Martes 🔓</i><br><br>El hilo se enreda...<br><br><b>Toca esta caja para jugar 🎮</b>";
+                }
+                
+                // Le damos a la caja la función de ir a la página que toca
                 let cajaId = (dia === 17) ? 'caja-viernes' : 'caja-' + ['lunes','martes','miercoles','jueves'][dia-13];
-                document.getElementById(cajaId).onclick = (dia === 13) ? function() { window.location.href = 'lunes.html'; } : null;
+                document.getElementById(cajaId).onclick = function() {
+                    if (dia === 13) window.location.href = 'lunes.html';
+                    if (dia === 14) window.location.href = 'martes.html';
+                    // Aquí iremos añadiendo el miercoles, jueves, etc.
+                };
             }
 
-            // COMPROBACIÓN INICIAL (lo que pasa al cargar la web)
+            // COMPROBACIÓN INICIAL AL CARGAR LA WEB
             for (let dia = 13; dia <= 17; dia++) {
                 let cajaId = (dia === 17) ? 'caja-viernes' : 'caja-' + ['lunes','martes','miercoles','jueves'][dia-13];
                 let caja = document.getElementById(cajaId);
 
                 if (ahora >= fechas[dia]) {
-                    // Si ya es el día, se abre normal
+                    // Si ya es el día (o ha pasado), se abre normal
                     forzarDesbloqueo(dia);
                 } else {
-                    // Si está bloqueado, al tocar sale el modal
+                    // Si está bloqueado, al tocar sale el modal para meter la pass
                     caja.style.cursor = 'pointer';
                     caja.onclick = function() {
                         diaAProbar = dia;
                         document.getElementById('texto-modal-fecha').innerText = `Se desbloquea a las 00:00:00 del ${nombresDias[dia]}.`;
                         document.getElementById('modal-bloqueado').style.display = 'flex';
-                        document.getElementById('input-pass').value = ''; // Limpiamos la pass por si acaso
+                        document.getElementById('input-pass').value = ''; 
                     };
                 }
             }
 
-            // DETECTAR LA CONTRASEÑA EN TIEMPO REAL SEGÚN EL DÍA
+            // DETECTAR LA CONTRASEÑA MIENTRAS ESCRIBES
             document.getElementById('input-pass').addEventListener('input', function(e) {
-                // Comprobamos si el texto introducido coincide con la contraseña del día seleccionado
                 if (diaAProbar && e.target.value === contrasenas[diaAProbar]) {
-                    document.getElementById('modal-bloqueado').style.display = 'none'; // Cerramos el modal
-                    forzarDesbloqueo(diaAProbar); // Hackeamos el sistema
+                    document.getElementById('modal-bloqueado').style.display = 'none'; 
+                    forzarDesbloqueo(diaAProbar); 
                 }
             });
         });
