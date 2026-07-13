@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misión del Martes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #412b0e;
+            color: #fdfaf6;
+            font-family: 'Playfair Display', serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        h1 { color: #cc2b2b; font-size: 1.8em; margin-bottom: 10px; }
+        p { font-size: 1em; margin-bottom: 25px; color: #f9e6cf; max-width: 350px; }
+
+        /* --- FASE 1: CONECTA EL HILO --- */
+        #zona-juego-1 {
+            width: 100%; max-width: 350px;
+            display: flex; flex-direction: column; align-items: center;
+            position: relative;
+        }
+
+        .contenedor-tablero {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .tablero-hilos {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+            background: rgba(253, 250, 246, 0.1);
+            padding: 2px;
+            border-radius: 8px;
+            border: 1px solid rgba(204, 43, 43, 0.3);
+        }
+
+        .pieza-hilo {
+            aspect-ratio: 1;
+            background-color: rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .pieza-hilo svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .indicador {
+            position: absolute;
+            font-size: 1.5em;
+            z-index: 10;
+        }
+        
+        .indicador-inicio {
+            top: 12.5%; 
+            left: -35px;
+            transform: translateY(-50%);
+        }
+        
+        .indicador-fin {
+            top: 87.5%; 
+            right: -35px;
+            transform: translateY(-50%);
+        }
+
+        /* --- FASE 2: ROMPECABEZAS DESLIZANTE --- */
+        #zona-juego-2 {
+            display: none; width: 100%; max-width: 350px; flex-direction: column; align-items: center;
+        }
+
+        #reloj {
+            font-size: 2.2em;
+            color: #d4af37;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-family: monospace;
+            background: rgba(0,0,0,0.3);
+            padding: 5px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+        }
+
+        .tablero-slide {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            background: rgba(253, 250, 246, 0.05);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(204, 43, 43, 0.3);
+            width: 100%;
+            max-width: 260px;
+            margin: 0 auto;
+        }
+
+        .pieza-slide {
+            aspect-ratio: 1;
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 2px solid #cc2b2b;
+            color: #fdfaf6;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 2.2em; font-family: 'Playfair Display', serif; font-weight: bold;
+            border-radius: 8px; cursor: pointer; user-select: none;
+            -webkit-tap-highlight-color: transparent; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.1s, background-color 0.1s;
+        }
+        .pieza-slide:active { transform: scale(0.95); background-color: rgba(204, 43, 43, 0.2); }
+        .pieza-vacia { background-color: transparent; border-color: transparent; box-shadow: none; cursor: default; }
+
+        /* --- PREMIO FINAL --- */
+        #zona-premio {
+            display: none; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(204, 43, 43, 0.5); border-radius: 15px; padding: 30px 20px; box-shadow: 0 10px 25px rgba(204, 43, 43, 0.15); animation: aparecer 1s ease forwards;
+        }
+        @keyframes aparecer { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .boton-spotify { color: #cc2b2b; text-decoration: none; font-weight: bold; border: 1px solid #cc2b2b; padding: 12px 24px; border-radius: 8px; display: inline-block; margin-top: 20px; font-size: 1.1em; background-color: rgba(204, 43, 43, 0.1); }
+        .boton-volver { color: #fdfaf6; text-decoration: underline; font-size: 0.9em; margin-top: 30px; display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- FASE 1: CONECTA EL HILO -->
+    <div id="zona-juego-1">
+        <h1>Fase 1: Conecta el hilo</h1>
+        <p>Toca las piezas para girarlas y forma un camino continuo entre los dos corazones.</p>
+        
+        <div class="contenedor-tablero">
+            <div class="indicador indicador-inicio">❤️</div>
+            <div class="indicador indicador-fin">❤️</div>
+
+            <div class="tablero-hilos" id="tablero-hilos">
+                <!-- Se rellena con JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- FASE 2: ROMPECABEZAS -->
+    <div id="zona-juego-2">
+        <h1>Fase 2: Ordena tu mente</h1>
+        <p>¡Corre! Mueve las piezas tocándolas. Tienes <b>5 minutos</b> para ordenarlas del 1 al 8 de izquierda a derecha.</p>
+        
+        <!-- AVISO DEL TIEMPO -->
+        <div style="background: rgba(212, 175, 55, 0.1); border-radius: 8px; padding: 10px; margin-bottom: 15px; border: 1px dashed rgba(212, 175, 55, 0.4); max-width: 280px;">
+            <p style="margin: 0; font-size: 0.85em; color: #d4af37;">⏳ <b>Pista:</b> Si el contador llega a cero, el nivel se saltará automáticamente y te dara la sílaba secreta de hoy, no tengas miedo.</p>
+        </div>
+
+        <div id="reloj">05:00</div>
+
+        <div class="tablero-slide" id="tablero-juego">
+            <!-- Se rellena con JS -->
+        </div>
+    </div>
+
+    <!-- PREMIO -->
+    <div id="zona-premio">
+        <h1 id="titulo-premio">¡Reto superado!</h1>
+        <p>Te has merecido la recompensa de hoy. Descansa esa cabeza y dale al play.</p>
+        
+        <div style="background: rgba(204, 43, 43, 0.1); border: 2px dashed #cc2b2b; padding: 20px; border-radius: 10px; margin: 25px 0;">
+            <p style="margin: 0; font-size: 1em; letter-spacing: 2px; color: #f9e6cf; font-weight: bold;">GUARDA ESTA SÍLABA:</p>
+            <div style="font-size: 3.5em; margin-top: 10px; color: #cc2b2b; font-weight: bold; line-height: 1;">
+                有 <span style="font-size: 0.35em; color: #fdfaf6; vertical-align: middle;">(Yǒu)</span>
+            </div>
+        </div>
+        
+        <!-- OJO: PON TU LINK AQUI -->
+        <a href="TU_LINK_DE_SPOTIFY_AQUI" class="boton-spotify">🎧 Abrir Sorpresa</a>
+        <a href="index.html" class="boton-volver">Volver a los días</a>
+    </div>
+
+    <script>
+        // ==========================================
+        // FASE 1: CONECTA EL HILO
+        // ==========================================
+        const svgRecto = `<svg viewBox="0 0 100 100"><path d="M0 50 L100 50" stroke="#cc2b2b" stroke-width="18" fill="none"/></svg>`;
+        const svgCurva = `<svg viewBox="0 0 100 100"><path d="M50 0 L50 50 L100 50" stroke="#cc2b2b" stroke-width="18" fill="none"/></svg>`;
+
+        const gridData = [
+            { id: 0, svg: svgRecto, path: true,  targets: [0, 180] },
+            { id: 1, svg: svgCurva, path: true,  targets: [180] },
+            { id: 2, svg: svgRecto, path: false, targets: [] },
+            { id: 3, svg: svgCurva, path: false, targets: [] },
+
+            { id: 4, svg: svgRecto, path: false, targets: [] },
+            { id: 5, svg: svgCurva, path: true,  targets: [0] },
+            { id: 6, svg: svgCurva, path: true,  targets: [180] },
+            { id: 7, svg: svgRecto, path: false, targets: [] },
+
+            { id: 8, svg: svgCurva, path: false, targets: [] },
+            { id: 9, svg: svgRecto, path: false, targets: [] },
+            { id: 10, svg: svgRecto, path: true, targets: [90, 270] },
+            { id: 11, svg: svgCurva, path: false, targets: [] },
+
+            { id: 12, svg: svgRecto, path: false, targets: [] },
+            { id: 13, svg: svgCurva, path: false, targets: [] },
+            { id: 14, svg: svgCurva, path: true, targets: [0] },
+            { id: 15, svg: svgRecto, path: true, targets: [0, 180] }
+        ];
+
+        let rotaciones = Array(16).fill(0);
+        let fase1Ganada = false;
+
+        function inicializarHilos() {
+            const tablero = document.getElementById('tablero-hilos');
+            gridData.forEach((pieza, i) => {
+                let girosAleatorios = Math.floor(Math.random() * 3) + 1;
+                rotaciones[i] = girosAleatorios * 90;
+
+                let div = document.createElement('div');
+                div.classList.add('pieza-hilo');
+                div.id = `pieza-hilo-${i}`;
+                div.innerHTML = pieza.svg;
+                div.style.transform = `rotate(${rotaciones[i]}deg)`;
+
+                div.onclick = () => girarPiezaHilo(i);
+                tablero.appendChild(div);
+            });
+        }
+
+        function girarPiezaHilo(i) {
+            if (fase1Ganada) return;
+            rotaciones[i] += 90;
+            document.getElementById(`pieza-hilo-${i}`).style.transform = `rotate(${rotaciones[i]}deg)`;
+            comprobarVictoriaHilos();
+        }
+
+        function comprobarVictoriaHilos() {
+            let ganado = true;
+            for (let i = 0; i < gridData.length; i++) {
+                if (gridData[i].path) {
+                    let anguloActual = rotaciones[i] % 360;
+                    if (!gridData[i].targets.includes(anguloActual)) {
+                        ganado = false;
+                        break;
+                    }
+                }
+            }
+
+            if (ganado) {
+                fase1Ganada = true;
+                setTimeout(() => {
+                    document.getElementById('zona-juego-1').style.display = 'none';
+                    document.getElementById('zona-juego-2').style.display = 'flex';
+                    iniciarRompecabezas();
+                }, 600);
+            }
+        }
+
+
+        // ==========================================
+        // FASE 2: ROMPECABEZAS CON TEMPORIZADOR
+        // ==========================================
+        let tableroSlide = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+        let fase2Ganada = false;
+        let tiempoRestante = 300; // 5 minutos (300 segundos)
+        let intervaloReloj;
+
+        function iniciarRompecabezas() {
+            // Mezclar para que siempre tenga solución
+            for (let i = 0; i < 300; i++) {
+                let pos0 = tableroSlide.indexOf(0);
+                let movimientosValidos = [];
+                
+                if (pos0 % 3 !== 0) movimientosValidos.push(pos0 - 1);
+                if (pos0 % 3 !== 2) movimientosValidos.push(pos0 + 1);
+                if (pos0 >= 3) movimientosValidos.push(pos0 - 3);
+                if (pos0 <= 5) movimientosValidos.push(pos0 + 3);
+                
+                let mov = movimientosValidos[Math.floor(Math.random() * movimientosValidos.length)];
+                
+                tableroSlide[pos0] = tableroSlide[mov];
+                tableroSlide[mov] = 0;
+            }
+            
+            renderizarSlide();
+
+            // Arrancar el reloj
+            intervaloReloj = setInterval(() => {
+                tiempoRestante--;
+                
+                let min = Math.floor(tiempoRestante / 60);
+                let sec = tiempoRestante % 60;
+                let textoReloj = `0${min}:${sec < 10 ? '0'+sec : sec}`;
+                document.getElementById('reloj').innerText = textoReloj;
+
+                // Si se acaba el tiempo, se rinde y le da el premio
+                if (tiempoRestante <= 0 && !fase2Ganada) {
+                    clearInterval(intervaloReloj);
+                    document.getElementById('titulo-premio').innerText = "¡Campana salvadora! 🔔";
+                    mostrarPremio();
+                }
+            }, 1000);
+        }
+
+        function renderizarSlide() {
+            const contenedor = document.getElementById('tablero-juego');
+            contenedor.innerHTML = '';
+            
+            tableroSlide.forEach((num, index) => {
+                let div = document.createElement('div');
+                
+                if (num === 0) {
+                    div.className = 'pieza-slide pieza-vacia';
+                } else {
+                    div.className = 'pieza-slide';
+                    div.innerText = num;
+                    div.onclick = () => moverPiezaSlide(index);
+                }
+                contenedor.appendChild(div);
+            });
+        }
+
+        function moverPiezaSlide(index) {
+            if (fase2Ganada) return;
+            
+            let pos0 = tableroSlide.indexOf(0);
+            
+            let esAdyacente = 
+                (index === pos0 - 1 && pos0 % 3 !== 0) || 
+                (index === pos0 + 1 && pos0 % 3 !== 2) || 
+                (index === pos0 - 3) ||                   
+                (index === pos0 + 3);                     
+
+            if (esAdyacente) {
+                tableroSlide[pos0] = tableroSlide[index];
+                tableroSlide[index] = 0;
+                
+                renderizarSlide();
+                
+                // Comprobamos si ha ganado antes del tiempo
+                if (tableroSlide.join('') === '123456780') {
+                    fase2Ganada = true;
+                    clearInterval(intervaloReloj);
+                    document.getElementById('titulo-premio').innerText = "¡Código descifrado a tiempo! ⏱️";
+                    setTimeout(mostrarPremio, 500);
+                }
+            }
+        }
+
+        function mostrarPremio() {
+            document.getElementById('zona-juego-2').style.display = 'none';
+            document.getElementById('zona-premio').style.display = 'block';
+        }
+
+        // Arrancamos renderizando la fase 1
+        window.onload = inicializarHilos;
+    </script>
+</body>
+</html>
