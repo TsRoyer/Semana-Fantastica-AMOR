@@ -18,17 +18,30 @@
         .dialogo-clip { background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 15px; font-style: italic; font-size: 0.95em; color: #fff; line-height: 1.6; }
         video { width: 100%; aspect-ratio: 16/9; background: #000; display: block; border-top: 1px solid #333; }
         .btn-volver { display: inline-block; background: #333; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; margin-bottom: 50px; }
+
+        /* Estilos del Popup */
+        #popup-bienvenida { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .contenido-popup { background: #222; padding: 30px; border-radius: 12px; text-align: center; max-width: 80%; border: 1px solid #E50914; }
+        .btn-entrar { background: #E50914; color: white; border: none; padding: 10px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
+
+    <!-- POPUP -->
+    <div id="popup-bienvenida">
+        <div class="contenido-popup">
+            <h2 style="color: #E50914;">Para ti, Sarita, de Mi Corazon</h2>
+            <p>He preparado estos fragmentos porque resumen lo que siento por ti. Cada escena simboliza un poco lo que significas para mí.</p>
+            <button class="btn-entrar" onclick="document.getElementById('popup-bienvenida').style.display='none'">Ver SaraFlix</button>
+        </div>
+    </div>
 
     <header>
         <h1 class="logo">SARAFLIX</h1>
     </header>
 
     <div class="contenedor-videos">
-
-        <!-- CLIP 1: ATDTV -->
+        <!-- CLIP 1 -->
         <div class="tarjeta-video">
             <div class="info-arriba">
                 <h2 class="titulo-clip">A través de mi ventana</h2>
@@ -38,7 +51,7 @@
             <video controls playsinline preload="metadata"><source src="./videosFlix/ATDTV.mp4" type="video/mp4"></video>
         </div>
 
-        <!-- CLIP 2: BRLN -->
+        <!-- CLIP 2 -->
         <div class="tarjeta-video">
             <div class="info-arriba">
                 <h2 class="titulo-clip">Berlín</h2>
@@ -48,7 +61,7 @@
             <video controls playsinline preload="metadata"><source src="./videosFlix/BRLN.mp4" type="video/mp4"></video>
         </div>
 
-        <!-- CLIP 3: CCAVM -->
+        <!-- CLIP 3 -->
         <div class="tarjeta-video">
             <div class="info-arriba">
                 <h2 class="titulo-clip">Cómo conocí a vuestra madre</h2>
@@ -58,7 +71,7 @@
             <video controls playsinline preload="metadata"><source src="./videosFlix/CCAVM.mp4" type="video/mp4"></video>
         </div>
 
-        <!-- CLIP 4: EDDN -->
+        <!-- CLIP 4 -->
         <div class="tarjeta-video">
             <div class="info-arriba">
                 <h2 class="titulo-clip">El Diario de Noa</h2>
@@ -68,7 +81,7 @@
             <video controls playsinline preload="metadata"><source src="./videosFlix/EDDN.mp4" type="video/mp4"></video>
         </div>
 
-        <!-- CLIP 5: LCDP -->
+        <!-- CLIP 5 -->
         <div class="tarjeta-video">
             <div class="info-arriba">
                 <h2 class="titulo-clip">La Casa de Papel</h2>
@@ -79,7 +92,6 @@
         </div>
 
         <center><a href="index.html" class="btn-volver">Volver a los días</a></center>
-
     </div>
 
 </body>
