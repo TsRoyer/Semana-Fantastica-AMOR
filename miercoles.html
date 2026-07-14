@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Miércoles - El Código</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
     <style>
@@ -21,7 +21,7 @@
         .contenedor {
             width: 100%;
             max-width: 500px;
-            padding: 40px 20px;
+            padding: 30px 20px;
             box-sizing: border-box;
             text-align: center;
         }
@@ -29,48 +29,58 @@
         h1 {
             color: #E50914;
             font-family: 'Playfair Display', serif;
-            font-size: 2.5em;
+            font-size: 2.2em;
             margin-bottom: 5px;
+            margin-top: 0;
         }
 
         #nivel-texto {
             color: #f39c12;
-            font-size: 1.2em;
+            font-size: 1.1em;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         p {
             color: #ccc;
-            font-size: 1.1em;
-            line-height: 1.5;
-            margin-bottom: 30px;
+            font-size: 1em;
+            line-height: 1.4;
+            margin-bottom: 25px;
         }
 
         /* Contenedor de las 4 cajitas */
         .cajas-input {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 25px;
         }
 
-        /* Estilo de cada cajita */
+        /* Estilo de cada cajita adaptado a móviles */
         .caja-num {
             background: #222;
             border: 2px solid #333;
             color: #fff;
-            font-size: 2em;
+            /* Usamos medidas responsivas para que en móvil sea pequeño y en PC grande */
+            width: clamp(45px, 15vw, 60px);
+            height: clamp(55px, 18vw, 70px);
+            font-size: clamp(1.5em, 6vw, 2em);
             text-align: center;
-            width: 60px;
-            height: 70px;
             border-radius: 10px;
             outline: none;
             transition: all 0.3s;
             font-weight: bold;
+            /* Para quitar las flechitas por defecto de los inputs numéricos si aparecen */
+            -moz-appearance: textfield;
+        }
+
+        .caja-num::-webkit-outer-spin-button,
+        .caja-num::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
         .caja-num:focus {
@@ -100,14 +110,14 @@
         .historial {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 12px;
+            margin-top: 25px;
         }
 
         .intento {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 10px;
             animation: deslizar 0.3s ease-out;
         }
 
@@ -116,14 +126,15 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Historial también responsivo */
         .digito-historial {
-            width: 60px;
-            height: 60px;
+            width: clamp(45px, 15vw, 60px);
+            height: clamp(45px, 15vw, 60px);
             display: flex;
             justify-content: center;
             align-items: center;
-            border-radius: 10px;
-            font-size: 1.8em;
+            border-radius: 8px;
+            font-size: clamp(1.4em, 5vw, 1.8em);
             font-weight: bold;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
@@ -141,7 +152,7 @@
             padding: 12px 24px;
             border-radius: 6px;
             font-weight: bold;
-            margin-top: 40px;
+            margin-top: 30px;
         }
 
         /* ESTILOS DE LOS POPUPS (INTERMEDIO Y FINAL) */
@@ -196,13 +207,14 @@
     <div class="contenedor">
         <h1>El Código</h1>
         <h2 id="nivel-texto">Código 1 de 3</h2>
-        <p>Adivina mi número secreto de 4 cifras distintas. <br><br> 🟩 = Número y posición correctos.<br> 🟧 = Número correcto pero en otro sitio.<br> ⬛ = Ese número no está.</p>
+        <p>Adivina mi número secreto de 4 cifras. <br><br> 🟩 = Número y posición.<br> 🟧 = Número en otro sitio.<br> ⬛ = No está.</p>
 
         <div class="cajas-input" id="contenedor-inputs">
-            <input type="text" maxlength="1" class="caja-num" id="caja1" autofocus>
-            <input type="text" maxlength="1" class="caja-num" id="caja2">
-            <input type="text" maxlength="1" class="caja-num" id="caja3">
-            <input type="text" maxlength="1" class="caja-num" id="caja4">
+            <!-- AQUÍ ESTÁ LA MAGIA PARA EL TECLADO DEL IPHONE: inputmode="numeric" y pattern="[0-9]*" -->
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="caja-num" id="caja1" autofocus>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="caja-num" id="caja2">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="caja-num" id="caja3">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="caja-num" id="caja4">
         </div>
         
         <button id="btn-probar" onclick="comprobarNumero()">Probar Código</button>
