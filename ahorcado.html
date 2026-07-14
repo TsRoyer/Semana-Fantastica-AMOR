@@ -110,7 +110,7 @@
             border-radius: 6px;
             font-size: 1.2em;
             font-weight: bold;
-            width: calc(10% - 8px); /* 10 teclas por fila aprox */
+            width: calc(10% - 8px);
             min-width: 30px;
             aspect-ratio: 1;
             cursor: pointer;
@@ -153,11 +153,11 @@
         .contenido-popup {
             background: #111;
             border: 2px solid #E50914;
-            padding: 40px 30px;
+            padding: 30px 20px;
             border-radius: 15px;
             text-align: center;
-            width: 85%;
-            max-width: 400px;
+            width: 90%;
+            max-width: 350px;
             box-shadow: 0 0 30px rgba(229, 9, 20, 0.6);
             animation: zoomIn 0.3s ease;
         }
@@ -167,7 +167,42 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        .btn-accion {
+        /* BOTONES NUEVOS DEL POPUP */
+        .btn-ig {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            transition: transform 0.2s;
+        }
+
+        .btn-wa {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            transition: transform 0.2s;
+        }
+
+        .btn-ig:active, .btn-wa:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-reintentar {
             background: #E50914;
             color: white;
             border: none;
@@ -176,9 +211,7 @@
             font-weight: bold;
             font-size: 1.1em;
             cursor: pointer;
-            margin-top: 25px;
-            text-decoration: none;
-            display: inline-block;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -193,7 +226,7 @@
             <!-- Corazón Base -->
             <path id="corazon-base" class="corazon-base" d="M 50,90 C 50,90 10,60 10,30 C 10,15 25,10 35,15 C 45,20 50,30 50,30 C 50,30 55,20 65,15 C 75,10 90,15 90,30 C 90,60 50,90 50,90 Z" />
             
-            <!-- 6 Grietas (se van mostrando con los fallos) -->
+            <!-- 6 Grietas -->
             <path id="grieta-1" class="grieta" d="M 35,15 L 40,25 L 35,35" />
             <path id="grieta-2" class="grieta" d="M 65,15 L 60,25 L 68,32" />
             <path id="grieta-3" class="grieta" d="M 20,40 L 30,45 L 25,55" />
@@ -203,18 +236,33 @@
         </svg>
     </div>
 
-    <!-- Donde aparecen las letras -->
     <div id="contenedor-palabra"></div>
-
-    <!-- Teclado -->
     <div id="teclado"></div>
 
-    <!-- POPUP VICTORIA -->
+    <!-- POPUP VICTORIA NUEVO (Con IG y WA) -->
     <div id="popup-victoria" class="overlay">
         <div class="contenido-popup">
             <h2 style="color: #E50914; margin-top: 0; font-size: 2em;">¡Lo lograste! ❤️</h2>
-            <p style="font-size: 1.1em; color: #fff;">Nuestro corazón sigue intacto. Has superado el reto del miércoles de locos.</p>
-            <a href="index.html" class="btn-accion">Terminar Miércoles</a>
+            <p style="font-size: 1em; color: #fff; margin-bottom: 15px;">Nuestro corazón sigue intacto. Te has ganado la tercera recompensa.</p>
+            
+            <!-- Caja con la sílaba secreta -->
+            <div style="background: rgba(229, 9, 20, 0.1); border: 2px dashed #E50914; padding: 15px; border-radius: 10px; margin-bottom: 25px;">
+                <p style="margin: 0; font-size: 0.9em; letter-spacing: 2px; color: #ccc; font-weight: bold;">GUARDA ESTA SÍLABA:</p>
+                <div style="font-size: 3em; margin-top: 5px; color: #E50914; font-weight: bold; line-height: 1;">
+                    独 <span style="font-size: 0.35em; color: #fff; vertical-align: middle;">(Dú)</span>
+                </div>
+            </div>
+
+            <!-- Botones de Redes -->
+            <div style="display: flex; flex-direction: column; gap: 12px; align-items: center;">
+                <!-- OJO: CAMBIA EL ENLACE DE ABAJO POR EL INSTAGRAM DE VUESTRA CUENTA -->
+                <a href="https://www.instagram.com/rrsstqm/" target="_blank" class="btn-ig">📸 Pincha Aqui</a>
+                
+                <!-- OJO: CAMBIA EL NUMERO DE ABAJO (Dejando el 34 delante si eres de España) -->
+                <a href="https://wa.me/34644325070?text=SOLICITAR%20ACCESO" target="_blank" class="btn-wa">💬 SOLICITAR ACCESO</a>
+                
+                <a href="index.html" style="color: #888; text-decoration: underline; margin-top: 10px; font-size: 0.9em;">Volver a los días</a>
+            </div>
         </div>
     </div>
 
@@ -223,12 +271,11 @@
         <div class="contenido-popup">
             <h2 style="color: #555; margin-top: 0; font-size: 2em;">Corazón Roto 💔</h2>
             <p style="font-size: 1.1em; color: #fff;">Te has quedado sin intentos, goyineitora.</p>
-            <button class="btn-accion" onclick="reiniciarJuego()">Intentarlo de nuevo</button>
+            <button class="btn-reintentar" onclick="reiniciarJuego()">Intentarlo de nuevo</button>
         </div>
     </div>
 
     <script>
-        // AQUÍ PONES LA FRASE QUE QUIERAS (Las letras en mayúsculas y los espacios valen)
         const FRASE_SECRETA = "TE QUIERO MUCHO"; 
         
         const MAX_ERRORES = 6;
@@ -239,14 +286,12 @@
         const teclado = document.getElementById("teclado");
         const corazonBase = document.getElementById("corazon-base");
 
-        // Letras del teclado (Qwerty normal)
         const letras = "QWERTYUIOPASDFGHJKLÑZXCVBNM".split('');
 
         function inicializarJuego() {
             errores = 0;
             letrasAdivinadas = [];
             
-            // Limpiar visuales
             contenedorPalabra.innerHTML = "";
             teclado.innerHTML = "";
             corazonBase.style.fill = "#E50914";
@@ -257,7 +302,6 @@
             document.getElementById("popup-victoria").style.display = "none";
             document.getElementById("popup-gameover").style.display = "none";
 
-            // Crear los huecos de las letras
             for (let char of FRASE_SECRETA) {
                 let div = document.createElement("div");
                 if (char === " ") {
@@ -268,7 +312,6 @@
                 contenedorPalabra.appendChild(div);
             }
 
-            // Crear el teclado
             letras.forEach(letra => {
                 let btn = document.createElement("button");
                 btn.className = "tecla";
@@ -324,15 +367,12 @@
         }
 
         function romperCorazon() {
-            // Mostrar la grieta correspondiente al error actual
             let grieta = document.getElementById(`grieta-${errores}`);
             if (grieta) grieta.style.opacity = "1";
 
-            // Si llega al final, el corazón se vuelve gris y pilla la grieta gorda del medio
             if (errores === MAX_ERRORES) {
                 corazonBase.style.fill = "#333";
             } else {
-                // Hacer un efectillo de latido roto
                 let corazon = document.querySelector(".contenedor-corazon");
                 corazon.style.transform = "scale(0.9)";
                 setTimeout(() => corazon.style.transform = "scale(1)", 150);
@@ -343,7 +383,6 @@
             inicializarJuego();
         }
 
-        // Arrancamos todo
         inicializarJuego();
     </script>
 </body>

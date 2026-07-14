@@ -48,7 +48,14 @@
             color: #ccc;
             font-size: 1em;
             line-height: 1.4;
+            margin-bottom: 5px;
+        }
+
+        .texto-pista {
+            font-size: 0.85em;
+            color: #888;
             margin-bottom: 25px;
+            font-style: italic;
         }
 
         /* Contenedor de las 4 cajitas */
@@ -64,7 +71,6 @@
             background: #222;
             border: 2px solid #333;
             color: #fff;
-            /* Usamos medidas responsivas para que en móvil sea pequeño y en PC grande */
             width: clamp(45px, 15vw, 60px);
             height: clamp(55px, 18vw, 70px);
             font-size: clamp(1.5em, 6vw, 2em);
@@ -73,7 +79,6 @@
             outline: none;
             transition: all 0.3s;
             font-weight: bold;
-            /* Para quitar las flechitas por defecto de los inputs numéricos si aparecen */
             -moz-appearance: textfield;
         }
 
@@ -112,6 +117,7 @@
             flex-direction: column;
             gap: 12px;
             margin-top: 25px;
+            padding-bottom: 40px;
         }
 
         .intento {
@@ -140,9 +146,10 @@
         }
 
         /* Colores de aciertos */
-        .correcto { background: #27ae60; color: white; border: 2px solid #27ae60; }
-        .regular { background: #f39c12; color: white; border: 2px solid #f39c12; }
-        .incorrecto { background: #333; color: #888; border: 2px solid #222; }
+        .correcto { background: #27ae60; color: white; border: 2px solid #27ae60; } /* Verde */
+        .doble { background: #2980b9; color: white; border: 2px solid #2980b9; } /* Azul - Correcto y repetido */
+        .regular { background: #f39c12; color: white; border: 2px solid #f39c12; } /* Naranja */
+        .incorrecto { background: #333; color: #888; border: 2px solid #222; } /* Gris */
 
         .btn-volver {
             display: inline-block;
@@ -152,7 +159,7 @@
             padding: 12px 24px;
             border-radius: 6px;
             font-weight: bold;
-            margin-top: 30px;
+            margin-top: 10px;
         }
 
         /* ESTILOS DE LOS POPUPS (INTERMEDIO Y FINAL) */
@@ -188,7 +195,7 @@
 </head>
 <body>
 
-    <!-- POPUP INTERMEDIO (Sin botones, se va solo) -->
+    <!-- POPUP INTERMEDIO -->
     <div id="popup-intermedio">
         <div class="contenido-popup" style="padding: 25px;">
             <h2 id="titulo-intermedio" style="color: #27ae60; margin-top: 0; font-size: 1.8em;">¡Código Descifrado!</h2>
@@ -196,7 +203,7 @@
         </div>
     </div>
 
-    <!-- POPUP FINAL (Con contador) -->
+    <!-- POPUP FINAL -->
     <div id="popup-victoria">
         <div class="contenido-popup">
             <h2 style="color: #E50914; margin-top: 0; font-size: 2em;">¡Sistemas Hackeados! 🔓</h2>
@@ -207,10 +214,14 @@
     <div class="contenedor">
         <h1>El Código</h1>
         <h2 id="nivel-texto">Código 1 de 3</h2>
-        <p>Adivina mi número secreto de 4 cifras. <br><br> 🟩 = Número y posición.<br> 🟧 = Número en otro sitio.<br> ⬛ = No está.</p>
+        <p style="font-size: 0.9em; text-align: left; display: inline-block;">
+            🟩 = Número y posición.<br> 
+            🟦 = Número y posición (¡Y se repite!)<br>
+            🟧 = Número en otro sitio.<br> 
+            ⬛ = Ese número no está.
+        </p>
 
         <div class="cajas-input" id="contenedor-inputs">
-            <!-- AQUÍ ESTÁ LA MAGIA PARA EL TECLADO DEL IPHONE: inputmode="numeric" y pattern="[0-9]*" -->
             <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="caja-num" id="caja1" autofocus>
             <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="caja-num" id="caja2">
             <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="caja-num" id="caja3">
@@ -223,28 +234,23 @@
             <!-- Aquí van apareciendo las jugadas -->
         </div>
 
-        <a href="index.html" class="btn-volver">Volver a los días</a>
+        <a href="https://wa.me/34644325070?text=NECESITO%20AYUDA%20EN%20EL%20MIERCOLES" target="_blank" class="btn-volver" style="background: #25D366; color: #fff; border: none;">Pedir Ayuda 💬</a>
     </div>
 
     <script>
+        // LAS FECHAS SECRETAS QUE HAS ELEGIDO
+        const codigosSecretos = ["2019", "1707", "1718"];
         let secreto = "";
         let nivelActual = 1;
         const maxNiveles = 3;
 
-        function generarSecreto() {
-            secreto = "";
-            while (secreto.length < 4) {
-                let numRandom = Math.floor(Math.random() * 10).toString();
-                if (!secreto.includes(numRandom)) {
-                    secreto += numRandom;
-                }
-            }
+        function cargarNivel() {
+            secreto = codigosSecretos[nivelActual - 1];
         }
 
-        // Generamos el primer código
-        generarSecreto();
+        cargarNivel();
 
-        // Lógica para que el foco salte
+        // Lógica para que el foco salte en móvil y PC
         const inputs = document.querySelectorAll('.caja-num');
         inputs.forEach((input, index) => {
             input.addEventListener('input', (e) => {
@@ -273,8 +279,6 @@
             let nivelTexto = document.getElementById("nivel-texto");
 
             if (intento.length !== 4) {
-                // Aquí dejo este por si mete un input vacío, es el único nativo que queda para control de errores rápido
-                alert("Rellena las 4 casillas, bro.");
                 return;
             }
 
@@ -282,21 +286,49 @@
             fila.className = "intento";
 
             let aciertosTotales = 0;
+            
+            let intentoArr = intento.split('');
+            let secretoArr = secreto.split('');
+            let clasesResultado = Array(4).fill("incorrecto");
 
+            // Contar cuántas veces aparece cada número en el código secreto
+            let conteoSecreto = {};
+            for (let char of secreto) {
+                conteoSecreto[char] = (conteoSecreto[char] || 0) + 1;
+            }
+
+            // Pasada 1: Buscar los que están clavados en su sitio (Verdes o Azules)
+            for (let i = 0; i < 4; i++) {
+                if (intentoArr[i] === secretoArr[i]) {
+                    // Si el número aparece más de una vez en el secreto original, lo pintamos azul
+                    if (conteoSecreto[intentoArr[i]] > 1) {
+                        clasesResultado[i] = "doble";
+                    } else {
+                        clasesResultado[i] = "correcto";
+                    }
+                    
+                    secretoArr[i] = null; // Lo tachamos para que no cuente doble en los naranjas
+                    intentoArr[i] = null;
+                    aciertosTotales++;
+                }
+            }
+
+            // Pasada 2: Buscar los que están pero en otro lado (Naranjas)
+            for (let i = 0; i < 4; i++) {
+                if (intentoArr[i] !== null) {
+                    let index = secretoArr.indexOf(intentoArr[i]);
+                    if (index !== -1) {
+                        clasesResultado[i] = "regular";
+                        secretoArr[index] = null; // Lo tachamos
+                    }
+                }
+            }
+
+            // Dibujar las cajitas en el historial con su color
             for (let i = 0; i < 4; i++) {
                 let digitoBox = document.createElement("div");
-                digitoBox.className = "digito-historial";
+                digitoBox.className = "digito-historial " + clasesResultado[i];
                 digitoBox.innerText = intento[i];
-
-                if (intento[i] === secreto[i]) {
-                    digitoBox.classList.add("correcto");
-                    aciertosTotales++;
-                } else if (secreto.includes(intento[i])) {
-                    digitoBox.classList.add("regular");
-                } else {
-                    digitoBox.classList.add("incorrecto");
-                }
-
                 fila.appendChild(digitoBox);
             }
 
@@ -310,24 +342,21 @@
                 if (nivelActual < maxNiveles) {
                     nivelActual++;
                     
-                    // Mostramos popup intermedio en lugar del alert cutre
                     let popupInt = document.getElementById("popup-intermedio");
                     document.getElementById("titulo-intermedio").innerText = "¡Código " + (nivelActual - 1) + " Descifrado!";
                     popupInt.style.display = "flex";
 
-                    // Cerramos el popup a los 1.5s y preparamos el nuevo nivel
                     setTimeout(() => {
                         popupInt.style.display = "none";
                         nivelTexto.innerText = "Código " + nivelActual + " de 3";
                         historial.innerHTML = ""; 
-                        generarSecreto(); 
+                        cargarNivel(); 
                     }, 1500);
 
                 } else {
-                    // BLOQUEAMOS TODO Y MOSTRAMOS POPUP FINAL
                     inputs.forEach(input => input.disabled = true);
                     botonProbar.disabled = true;
-                    nivelTexto.innerText = "¡SISTEMA DESBLOQUEADO!";
+                    nivelTexto.innerText = "¡SISTEMAS HACKEADOS!";
                     nivelTexto.style.color = "#27ae60";
                     
                     let popupVic = document.getElementById("popup-victoria");
@@ -336,7 +365,6 @@
                     let tiempo = 3;
                     let contadorDOM = document.getElementById("contador-redirect");
                     
-                    // TEMPORIZADOR DE 3 SEGUNDOS
                     let intervalo = setInterval(() => {
                         tiempo--;
                         contadorDOM.innerText = tiempo;
