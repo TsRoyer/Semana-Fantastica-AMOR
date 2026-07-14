@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miércoles - El Código</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #141414;
+            color: #fff;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .contenedor {
+            width: 100%;
+            max-width: 500px;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        h1 {
+            color: #E50914;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        #nivel-texto {
+            color: #f39c12;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #ccc;
+            font-size: 1.1em;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        /* Contenedor de las 4 cajitas */
+        .cajas-input {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* Estilo de cada cajita */
+        .caja-num {
+            background: #222;
+            border: 2px solid #333;
+            color: #fff;
+            font-size: 2em;
+            text-align: center;
+            width: 60px;
+            height: 70px;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .caja-num:focus {
+            border-color: #E50914;
+            box-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
+            transform: translateY(-2px);
+        }
+
+        button {
+            background: #E50914;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+            max-width: 285px;
+        }
+
+        button:hover {
+            background: #f40612;
+        }
+
+        .historial {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .intento {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            animation: deslizar 0.3s ease-out;
+        }
+
+        @keyframes deslizar {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .digito-historial {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            font-size: 1.8em;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        /* Colores de aciertos */
+        .correcto { background: #27ae60; color: white; border: 2px solid #27ae60; }
+        .regular { background: #f39c12; color: white; border: 2px solid #f39c12; }
+        .incorrecto { background: #333; color: #888; border: 2px solid #222; }
+
+        .btn-volver {
+            display: inline-block;
+            background: #333;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 40px;
+        }
+
+        /* ESTILOS DE LOS POPUPS (INTERMEDIO Y FINAL) */
+        #popup-victoria, #popup-intermedio {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .contenido-popup {
+            background: #222;
+            padding: 40px 30px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 80%;
+            border: 2px solid #E50914;
+            box-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
+            animation: zoom 0.3s ease-out;
+        }
+
+        @keyframes zoom {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- POPUP INTERMEDIO (Sin botones, se va solo) -->
+    <div id="popup-intermedio">
+        <div class="contenido-popup" style="padding: 25px;">
+            <h2 id="titulo-intermedio" style="color: #27ae60; margin-top: 0; font-size: 1.8em;">¡Código Descifrado!</h2>
+            <p style="font-size: 1.1em; color: #ccc; margin-bottom: 0;">Cargando el siguiente nivel...</p>
+        </div>
+    </div>
+
+    <!-- POPUP FINAL (Con contador) -->
+    <div id="popup-victoria">
+        <div class="contenido-popup">
+            <h2 style="color: #E50914; margin-top: 0; font-size: 2em;">¡Sistemas Hackeados! 🔓</h2>
+            <p style="font-size: 1.2em; color: #fff;">A la siguiente prueba en <br><br><span id="contador-redirect" style="font-size: 2em; font-weight: bold; color: #f39c12;">3</span>...</p>
+        </div>
+    </div>
+
+    <div class="contenedor">
+        <h1>El Código</h1>
+        <h2 id="nivel-texto">Código 1 de 3</h2>
+        <p>Adivina mi número secreto de 4 cifras distintas. <br><br> 🟩 = Número y posición correctos.<br> 🟧 = Número correcto pero en otro sitio.<br> ⬛ = Ese número no está.</p>
+
+        <div class="cajas-input" id="contenedor-inputs">
+            <input type="text" maxlength="1" class="caja-num" id="caja1" autofocus>
+            <input type="text" maxlength="1" class="caja-num" id="caja2">
+            <input type="text" maxlength="1" class="caja-num" id="caja3">
+            <input type="text" maxlength="1" class="caja-num" id="caja4">
+        </div>
+        
+        <button id="btn-probar" onclick="comprobarNumero()">Probar Código</button>
+
+        <div class="historial" id="historial-intentos">
+            <!-- Aquí van apareciendo las jugadas -->
+        </div>
+
+        <a href="index.html" class="btn-volver">Volver a los días</a>
+    </div>
+
+    <script>
+        let secreto = "";
+        let nivelActual = 1;
+        const maxNiveles = 3;
+
+        function generarSecreto() {
+            secreto = "";
+            while (secreto.length < 4) {
+                let numRandom = Math.floor(Math.random() * 10).toString();
+                if (!secreto.includes(numRandom)) {
+                    secreto += numRandom;
+                }
+            }
+        }
+
+        // Generamos el primer código
+        generarSecreto();
+
+        // Lógica para que el foco salte
+        const inputs = document.querySelectorAll('.caja-num');
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                input.value = input.value.replace(/[^0-9]/g, '');
+                if(input.value !== '' && index < 3) {
+                    inputs[index + 1].focus();
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if(e.key === 'Backspace' && input.value === '' && index > 0) {
+                    inputs[index - 1].focus();
+                }
+                if(e.key === 'Enter') {
+                    comprobarNumero();
+                }
+            });
+        });
+
+        function comprobarNumero() {
+            let intento = "";
+            inputs.forEach(input => intento += input.value);
+
+            let historial = document.getElementById("historial-intentos");
+            let botonProbar = document.getElementById("btn-probar");
+            let nivelTexto = document.getElementById("nivel-texto");
+
+            if (intento.length !== 4) {
+                // Aquí dejo este por si mete un input vacío, es el único nativo que queda para control de errores rápido
+                alert("Rellena las 4 casillas, bro.");
+                return;
+            }
+
+            let fila = document.createElement("div");
+            fila.className = "intento";
+
+            let aciertosTotales = 0;
+
+            for (let i = 0; i < 4; i++) {
+                let digitoBox = document.createElement("div");
+                digitoBox.className = "digito-historial";
+                digitoBox.innerText = intento[i];
+
+                if (intento[i] === secreto[i]) {
+                    digitoBox.classList.add("correcto");
+                    aciertosTotales++;
+                } else if (secreto.includes(intento[i])) {
+                    digitoBox.classList.add("regular");
+                } else {
+                    digitoBox.classList.add("incorrecto");
+                }
+
+                fila.appendChild(digitoBox);
+            }
+
+            historial.prepend(fila);
+            
+            inputs.forEach(input => input.value = "");
+            inputs[0].focus();
+
+            // MÁQUINA DE ESTADOS AL ACERTAR
+            if (aciertosTotales === 4) {
+                if (nivelActual < maxNiveles) {
+                    nivelActual++;
+                    
+                    // Mostramos popup intermedio en lugar del alert cutre
+                    let popupInt = document.getElementById("popup-intermedio");
+                    document.getElementById("titulo-intermedio").innerText = "¡Código " + (nivelActual - 1) + " Descifrado!";
+                    popupInt.style.display = "flex";
+
+                    // Cerramos el popup a los 1.5s y preparamos el nuevo nivel
+                    setTimeout(() => {
+                        popupInt.style.display = "none";
+                        nivelTexto.innerText = "Código " + nivelActual + " de 3";
+                        historial.innerHTML = ""; 
+                        generarSecreto(); 
+                    }, 1500);
+
+                } else {
+                    // BLOQUEAMOS TODO Y MOSTRAMOS POPUP FINAL
+                    inputs.forEach(input => input.disabled = true);
+                    botonProbar.disabled = true;
+                    nivelTexto.innerText = "¡SISTEMA DESBLOQUEADO!";
+                    nivelTexto.style.color = "#27ae60";
+                    
+                    let popupVic = document.getElementById("popup-victoria");
+                    popupVic.style.display = "flex";
+
+                    let tiempo = 3;
+                    let contadorDOM = document.getElementById("contador-redirect");
+                    
+                    // TEMPORIZADOR DE 3 SEGUNDOS
+                    let intervalo = setInterval(() => {
+                        tiempo--;
+                        contadorDOM.innerText = tiempo;
+                        if (tiempo <= 0) {
+                            clearInterval(intervalo);
+                            window.location.href = "ahorcado.html";
+                        }
+                    }, 1000);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fase Final - Salva nuestro Corazón</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #141414;
+            color: #fff;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            justify-content: flex-start;
+            touch-action: manipulation;
+        }
+
+        h1 {
+            color: #E50914;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2em;
+            margin-top: 20px;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        p {
+            color: #ccc;
+            font-size: 1em;
+            margin-bottom: 10px;
+            text-align: center;
+            padding: 0 15px;
+        }
+
+        /* EL CORAZÓN SVG */
+        .contenedor-corazon {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .corazon-base {
+            fill: #E50914;
+            transition: fill 0.5s;
+        }
+
+        .grieta {
+            stroke: #141414;
+            stroke-width: 2.5;
+            fill: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* LA FRASE A ADIVINAR */
+        #contenedor-palabra {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 0 15px;
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+        }
+
+        .letra-caja {
+            width: 35px;
+            height: 45px;
+            border-bottom: 3px solid #E50914;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            font-size: 2em;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+            padding-bottom: 5px;
+        }
+
+        .espacio {
+            width: 20px;
+            border: none;
+        }
+
+        /* TECLADO VIRTUAL */
+        #teclado {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            max-width: 450px;
+            padding: 0 10px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        .tecla {
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.2em;
+            font-weight: bold;
+            width: calc(10% - 8px); /* 10 teclas por fila aprox */
+            min-width: 30px;
+            aspect-ratio: 1;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .tecla:active {
+            transform: scale(0.9);
+        }
+
+        .tecla.correcta {
+            background-color: #27ae60;
+            pointer-events: none;
+        }
+
+        .tecla.incorrecta {
+            background-color: #1a1a1a;
+            color: #555;
+            pointer-events: none;
+        }
+
+        /* POPUPS */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .contenido-popup {
+            background: #111;
+            border: 2px solid #E50914;
+            padding: 40px 30px;
+            border-radius: 15px;
+            text-align: center;
+            width: 85%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(229, 9, 20, 0.6);
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .btn-accion {
+            background: #E50914;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 25px;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Salva el Corazón</h1>
+    <p>Adivina la frase antes de que se rompa por completo.</p>
+
+    <!-- Corazón en SVG -->
+    <div class="contenedor-corazon">
+        <svg viewBox="0 0 100 100" width="100%" height="100%">
+            <!-- Corazón Base -->
+            <path id="corazon-base" class="corazon-base" d="M 50,90 C 50,90 10,60 10,30 C 10,15 25,10 35,15 C 45,20 50,30 50,30 C 50,30 55,20 65,15 C 75,10 90,15 90,30 C 90,60 50,90 50,90 Z" />
+            
+            <!-- 6 Grietas (se van mostrando con los fallos) -->
+            <path id="grieta-1" class="grieta" d="M 35,15 L 40,25 L 35,35" />
+            <path id="grieta-2" class="grieta" d="M 65,15 L 60,25 L 68,32" />
+            <path id="grieta-3" class="grieta" d="M 20,40 L 30,45 L 25,55" />
+            <path id="grieta-4" class="grieta" d="M 80,40 L 70,45 L 75,55" />
+            <path id="grieta-5" class="grieta" d="M 35,65 L 45,70 L 40,80" />
+            <path id="grieta-6" class="grieta" stroke-width="3" d="M 50,20 L 45,40 L 55,60 L 50,90" />
+        </svg>
+    </div>
+
+    <!-- Donde aparecen las letras -->
+    <div id="contenedor-palabra"></div>
+
+    <!-- Teclado -->
+    <div id="teclado"></div>
+
+    <!-- POPUP VICTORIA -->
+    <div id="popup-victoria" class="overlay">
+        <div class="contenido-popup">
+            <h2 style="color: #E50914; margin-top: 0; font-size: 2em;">¡Lo lograste! ❤️</h2>
+            <p style="font-size: 1.1em; color: #fff;">Nuestro corazón sigue intacto. Has superado el reto del miércoles de locos.</p>
+            <a href="index.html" class="btn-accion">Terminar Miércoles</a>
+        </div>
+    </div>
+
+    <!-- POPUP GAME OVER -->
+    <div id="popup-gameover" class="overlay">
+        <div class="contenido-popup">
+            <h2 style="color: #555; margin-top: 0; font-size: 2em;">Corazón Roto 💔</h2>
+            <p style="font-size: 1.1em; color: #fff;">Te has quedado sin intentos, goyineitora.</p>
+            <button class="btn-accion" onclick="reiniciarJuego()">Intentarlo de nuevo</button>
+        </div>
+    </div>
+
+    <script>
+        // AQUÍ PONES LA FRASE QUE QUIERAS (Las letras en mayúsculas y los espacios valen)
+        const FRASE_SECRETA = "TE QUIERO MUCHO"; 
+        
+        const MAX_ERRORES = 6;
+        let errores = 0;
+        let letrasAdivinadas = [];
+
+        const contenedorPalabra = document.getElementById("contenedor-palabra");
+        const teclado = document.getElementById("teclado");
+        const corazonBase = document.getElementById("corazon-base");
+
+        // Letras del teclado (Qwerty normal)
+        const letras = "QWERTYUIOPASDFGHJKLÑZXCVBNM".split('');
+
+        function inicializarJuego() {
+            errores = 0;
+            letrasAdivinadas = [];
+            
+            // Limpiar visuales
+            contenedorPalabra.innerHTML = "";
+            teclado.innerHTML = "";
+            corazonBase.style.fill = "#E50914";
+            for(let i=1; i<=MAX_ERRORES; i++) {
+                document.getElementById(`grieta-${i}`).style.opacity = "0";
+            }
+            
+            document.getElementById("popup-victoria").style.display = "none";
+            document.getElementById("popup-gameover").style.display = "none";
+
+            // Crear los huecos de las letras
+            for (let char of FRASE_SECRETA) {
+                let div = document.createElement("div");
+                if (char === " ") {
+                    div.className = "espacio";
+                } else {
+                    div.className = "letra-caja";
+                }
+                contenedorPalabra.appendChild(div);
+            }
+
+            // Crear el teclado
+            letras.forEach(letra => {
+                let btn = document.createElement("button");
+                btn.className = "tecla";
+                btn.innerText = letra;
+                btn.addEventListener("click", () => pulsarLetra(letra, btn));
+                teclado.appendChild(btn);
+            });
+
+            actualizarPalabra();
+        }
+
+        function pulsarLetra(letra, botonDOM) {
+            if (letrasAdivinadas.includes(letra) || errores >= MAX_ERRORES) return;
+
+            letrasAdivinadas.push(letra);
+
+            if (FRASE_SECRETA.includes(letra)) {
+                botonDOM.classList.add("correcta");
+                actualizarPalabra();
+            } else {
+                botonDOM.classList.add("incorrecta");
+                errores++;
+                romperCorazon();
+                
+                if (errores >= MAX_ERRORES) {
+                    setTimeout(() => {
+                        document.getElementById("popup-gameover").style.display = "flex";
+                    }, 500);
+                }
+            }
+        }
+
+        function actualizarPalabra() {
+            let divs = contenedorPalabra.children;
+            let haGanado = true;
+
+            for (let i = 0; i < FRASE_SECRETA.length; i++) {
+                let char = FRASE_SECRETA[i];
+                if (char === " ") continue;
+
+                if (letrasAdivinadas.includes(char)) {
+                    divs[i].innerText = char;
+                } else {
+                    haGanado = false;
+                }
+            }
+
+            if (haGanado) {
+                setTimeout(() => {
+                    document.getElementById("popup-victoria").style.display = "flex";
+                }, 500);
+            }
+        }
+
+        function romperCorazon() {
+            // Mostrar la grieta correspondiente al error actual
+            let grieta = document.getElementById(`grieta-${errores}`);
+            if (grieta) grieta.style.opacity = "1";
+
+            // Si llega al final, el corazón se vuelve gris y pilla la grieta gorda del medio
+            if (errores === MAX_ERRORES) {
+                corazonBase.style.fill = "#333";
+            } else {
+                // Hacer un efectillo de latido roto
+                let corazon = document.querySelector(".contenedor-corazon");
+                corazon.style.transform = "scale(0.9)";
+                setTimeout(() => corazon.style.transform = "scale(1)", 150);
+            }
+        }
+
+        function reiniciarJuego() {
+            inicializarJuego();
+        }
+
+        // Arrancamos todo
+        inicializarJuego();
+    </script>
+</body>
+</html>

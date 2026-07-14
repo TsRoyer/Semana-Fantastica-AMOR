@@ -187,7 +187,6 @@
             <div id="texto-13" class="texto-pista">
                 <i>Pista 1 - Lunes 🔓</i><br><br>
                 Empezamos la semana chill pero con deberes. Ponte los cascos, dale al play y lee muy bien los títulos de las primeras canciones... hay un mensaje escondido para ti.<br>
-                <!-- OJO: Cambia este enlace por el tuyo de Spotify -->
                 <a href="AQUI_PONES_EL_LINK_DE_SPOTIFY" class="boton-spotify">🎧 Abrir Playlist</a>
             </div>
         </div>
@@ -197,7 +196,7 @@
             <div id="candado-14" class="candado">🔒</div>
             <div id="texto-14" class="texto-pista">
                 <i>Pista 2 - Martes 🔓</i><br><br>
-                (Aquí meteremos la pista del martes)
+                El hilo se enreda...
             </div>
         </div>
 
@@ -206,7 +205,7 @@
             <div id="candado-15" class="candado">🔒</div>
             <div id="texto-15" class="texto-pista">
                 <i>Pista 3 - Miércoles 🔓</i><br><br>
-                (Aquí meteremos la pista del miércoles)
+                Salva nuestro corazón...
             </div>
         </div>
 
@@ -263,7 +262,7 @@
                 13: "Lunes 13", 14: "Martes 14", 15: "Miércoles 15", 16: "Jueves 16", 17: "Viernes 17"
             };
 
-            // DICCIONARIO DE CONTRASEÑAS SECRETAS (Tu puerta trasera)
+            // DICCIONARIO DE CONTRASEÑAS SECRETAS
             const contrasenas = {
                 13: 'RaulySara2466',
                 14: 'RaulySara2467',
@@ -280,26 +279,32 @@
                 let texto = document.getElementById('texto-' + dia);
                 texto.style.display = 'block';
 
-                // Enlace del Lunes
                 if (dia === 13) {
                     let caja = document.getElementById('caja-lunes');
                     caja.style.cursor = 'pointer';
                     texto.innerHTML = "<i>Pista 1 - Lunes 🔓</i><br><br>Tienes una misión pendiente...<br><br><b>Toca esta caja para jugar 🎮</b>";
                 }
                 
-                // NUEVO: Enlace del Martes
                 if (dia === 14) {
                     let caja = document.getElementById('caja-martes');
                     caja.style.cursor = 'pointer';
                     texto.innerHTML = "<i>Pista 2 - Martes 🔓</i><br><br>El hilo se enreda...<br><br><b>Toca esta caja para jugar 🎮</b>";
                 }
+
+                // AQUI HE METIDO LO DEL MIERCOLES
+                if (dia === 15) {
+                    let caja = document.getElementById('caja-miercoles');
+                    caja.style.cursor = 'pointer';
+                    texto.innerHTML = "<i>Pista 3 - Miércoles 🔓</i><br><br>Salva nuestro corazón...<br><br><b>Toca esta caja para jugar 🎮</b>";
+                }
                 
-                // Le damos a la caja la función de ir a la página que toca
+                // Redirecciones
                 let cajaId = (dia === 17) ? 'caja-viernes' : 'caja-' + ['lunes','martes','miercoles','jueves'][dia-13];
                 document.getElementById(cajaId).onclick = function() {
                     if (dia === 13) window.location.href = 'lunes.html';
                     if (dia === 14) window.location.href = 'martes.html';
-                    // Aquí iremos añadiendo el miercoles, jueves, etc.
+                    // Acuerdate de que el archivo del miercoles se tiene que llamar ahorcado.html
+                    if (dia === 15) window.location.href = 'miercoles.html'; 
                 };
             }
 
@@ -309,10 +314,8 @@
                 let caja = document.getElementById(cajaId);
 
                 if (ahora >= fechas[dia]) {
-                    // Si ya es el día (o ha pasado), se abre normal
                     forzarDesbloqueo(dia);
                 } else {
-                    // Si está bloqueado, al tocar sale el modal para meter la pass
                     caja.style.cursor = 'pointer';
                     caja.onclick = function() {
                         diaAProbar = dia;
