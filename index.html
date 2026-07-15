@@ -291,11 +291,17 @@
                     texto.innerHTML = "<i>Pista 2 - Martes 🔓</i><br><br>El hilo se enreda...<br><br><b>Toca esta caja para jugar 🎮</b>";
                 }
 
-                // AQUI HE METIDO LO DEL MIERCOLES
                 if (dia === 15) {
                     let caja = document.getElementById('caja-miercoles');
                     caja.style.cursor = 'pointer';
                     texto.innerHTML = "<i>Pista 3 - Miércoles 🔓</i><br><br>Salva nuestro corazón...<br><br><b>Toca esta caja para jugar 🎮</b>";
+                }
+
+                // AQUÍ LE METEMOS EL TEXTO DEL JUEVES
+                if (dia === 16) {
+                    let caja = document.getElementById('caja-jueves');
+                    caja.style.cursor = 'pointer';
+                    texto.innerHTML = "<i>Pista 4 - Jueves 🔓</i><br><br>Nuestros recuerdos borrosos...<br><br><b>Toca esta caja para jugar 🎮</b>";
                 }
                 
                 // Redirecciones
@@ -303,8 +309,8 @@
                 document.getElementById(cajaId).onclick = function() {
                     if (dia === 13) window.location.href = 'lunes.html';
                     if (dia === 14) window.location.href = 'martes.html';
-                    // Acuerdate de que el archivo del miercoles se tiene que llamar ahorcado.html
-                    if (dia === 15) window.location.href = 'miercoles.html'; 
+                    if (dia === 15) window.location.href = 'ahorcado.html'; 
+                    if (dia === 16) window.location.href = 'jueves.html'; // ENLACE AL JUEVES
                 };
             }
 
