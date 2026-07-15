@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jueves Fase 2 - Bomba C4</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #141414;
+            color: #fff;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            justify-content: flex-start;
+            overflow-x: hidden;
+            transition: background-color 0.1s;
+        }
+
+        html {
+            height: -webkit-fill-available;
+        }
+
+        .contenedor {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px;
+            box-sizing: border-box;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        h1 {
+            color: #E50914;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2em;
+            margin-bottom: 5px;
+            margin-top: 0;
+        }
+
+        #nivel-texto {
+            color: #f39c12;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        /* --- PREGUNTA --- */
+        .caja-pregunta {
+            background: #222;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 1.15em;
+            font-weight: bold;
+            margin-bottom: 25px;
+            border: 1px solid #444;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* --- CONTENEDOR MAESTRO DE BOMBA + CABLES --- */
+        .sistema-explosivo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 360px;
+            margin: 0 auto;
+        }
+
+        /* --- LA BOMBA C4 REALISTA --- */
+        .bomba-fisica {
+            width: 100%; 
+            max-width: 320px;
+            height: 220px;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            background-color: #a89f91;
+            border-radius: 10px;
+            box-shadow: 
+                inset 5px 5px 15px rgba(255,255,255,0.1), 
+                inset -10px -10px 20px rgba(0,0,0,0.4),
+                0 15px 25px rgba(0,0,0,0.6);
+            padding: 5px;
+            box-sizing: border-box;
+            z-index: 5;
+        }
+
+        .bomba-fisica::before, .bomba-fisica::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: rgba(0,0,0,0.2);
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+        .bomba-fisica::before { left: 33%; }
+        .bomba-fisica::after { left: 66%; }
+
+        .cinta-americana {
+            position: absolute;
+            left: -10px;
+            right: -10px;
+            height: 35px;
+            background: repeating-linear-gradient(
+                90deg,
+                #777,
+                #777 2px,
+                #888 2px,
+                #888 4px
+            );
+            box-shadow: 0 3px 5px rgba(0,0,0,0.5), inset 0 2px 2px rgba(255,255,255,0.2);
+            border-top: 1px solid #aaa;
+            border-bottom: 1px solid #555;
+            z-index: 2;
+        }
+        .cinta-arriba { top: 15%; }
+        .cinta-abajo { bottom: 15%; }
+
+        .placa-base {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%; 
+            max-width: 260px;
+            height: 120px;
+            background: #1a4c33;
+            border-radius: 6px;
+            border: 2px solid #0f2c1e;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8), inset 0 0 10px rgba(0,0,0,0.5);
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .placa-base::before {
+            content: '';
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            width: 20px;
+            height: 20px;
+            background: #111;
+            box-shadow: 30px 0 0 #111, 0 30px 0 #111;
+        }
+
+        .pantalla-lcd {
+            background: #000;
+            border: 4px solid #333;
+            border-bottom-color: #111;
+            border-right-color: #111;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.9), 0 0 5px rgba(0,0,0,0.5);
+            width: 85%;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+        }
+
+        #timer {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: clamp(2.5em, 10vw, 3.8em); 
+            font-weight: bold;
+            color: #d4ff00;
+            text-shadow: 0 0 10px #d4ff00;
+            line-height: 1;
+            letter-spacing: 2px;
+            transition: color 0.3s, text-shadow 0.3s;
+            margin: 0;
+        }
+
+        .peligro #timer {
+            color: #E50914;
+            text-shadow: 0 0 25px #E50914;
+            animation: latido-rapido 0.4s infinite;
+        }
+
+        @keyframes latido-rapido {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.03); }
+        }
+
+        .led-peligro {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            width: 10px;
+            height: 10px;
+            background: #ff0000;
+            border-radius: 50%;
+            border: 1px solid #440000;
+            box-shadow: 0 0 15px #ff0000;
+            animation: parpadeo-led 1s infinite;
+        }
+
+        .puertos-conexion {
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            justify-items: center;
+            z-index: 10;
+        }
+
+        .puerto {
+            width: 16px;
+            height: 12px;
+            background: #222;
+            border: 2px solid #111;
+            border-radius: 3px 3px 0 0;
+        }
+        .puerto.rojo { border-top-color: #ff4d4d; }
+        .puerto.verde { border-top-color: #4dff4d; }
+        .puerto.azul { border-top-color: #4d4dff; }
+
+
+        /* --- CABLES VERTICALES --- */
+        .grid-cables {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            width: 100%;
+            max-width: 320px;
+            gap: 0;
+            margin-top: 0;
+            z-index: 1;
+        }
+
+        .columna-cable {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .cable-vertical {
+            width: 10px;
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .cable-segmento-arriba, .cable-segmento-abajo {
+            width: 100%;
+            box-shadow: inset 2px 0 3px rgba(255,255,255,0.5), inset -2px 0 4px rgba(0,0,0,0.8);
+            transition: all 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .cable-segmento-arriba { height: 50%; }
+        .cable-segmento-abajo { height: 50%; border-radius: 0 0 5px 5px; }
+        
+        .cable-brecha {
+            height: 0;
+            transition: height 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .rojo .cable-segmento-arriba, .rojo .cable-segmento-abajo { background: linear-gradient(to right, #ff3333, #aa0000); }
+        .verde .cable-segmento-arriba, .verde .cable-segmento-abajo { background: linear-gradient(to right, #33ff33, #008800); }
+        .azul .cable-segmento-arriba, .azul .cable-segmento-abajo { background: linear-gradient(to right, #3333ff, #0000aa); }
+
+        .icono-tijera {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.8em;
+            opacity: 0.3;
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+        }
+
+        .cable-vertical:hover .icono-tijera, .cable-vertical:active .icono-tijera {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.3);
+        }
+
+        /* ANIMACIÓN CORTE DE CABLE */
+        .cable-vertical.cortado { pointer-events: none; }
+        .cable-vertical.cortado .icono-tijera { display: none; }
+        .cable-vertical.cortado .cable-brecha { height: 25px; }
+        .cable-vertical.cortado .cable-segmento-abajo { 
+            transform: translateY(15px) rotate(10deg);
+            opacity: 0.5; 
+        }
+
+        /* Cajas de respuestas */
+        .respuesta-texto {
+            background: #1a1a1a;
+            border: 2px solid #444;
+            color: #fdfaf6;
+            padding: 10px 5px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: bold;
+            text-align: center;
+            width: 90%;
+            box-sizing: border-box;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s, border-color 0.1s;
+        }
+
+        .respuesta-texto:active {
+            transform: scale(0.95);
+            border-color: #E50914;
+        }
+
+        /* --- ANIMACIÓN EXPLOSIÓN --- */
+        .boom {
+            animation: explosion 0.6s ease-out forwards;
+        }
+
+        @keyframes explosion {
+            0% { background-color: #141414; transform: translate(0, 0); }
+            10% { background-color: #fff; transform: translate(-15px, 15px) scale(1.05); }
+            20% { background-color: #ffcc00; transform: translate(15px, -15px) scale(1.1); }
+            40% { background-color: #E50914; transform: translate(-15px, -15px) scale(1.05); }
+            60% { background-color: #ff9900; transform: translate(15px, 15px) scale(1); }
+            80% { background-color: #E50914; transform: translate(-10px, 10px); }
+            100% { background-color: #141414; transform: translate(0, 0); }
+        }
+
+        /* --- POPUPS --- */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .contenido-popup {
+            background: #111;
+            border: 2px solid #E50914;
+            padding: 30px 20px;
+            border-radius: 15px;
+            text-align: center;
+            width: 90%;
+            max-width: 350px;
+            box-shadow: 0 0 30px rgba(229, 9, 20, 0.6);
+        }
+
+        .btn-accion {
+            background: #E50914;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 10px;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- POPUP DE INICIO -->
+    <div id="popup-inicio" class="overlay" style="display: flex;">
+        <div class="contenido-popup">
+            <h2 style="color: #E50914; margin-top: 0; font-size: 1.8em;">¡Último Esfuerzo! 🧨</h2>
+            <p style="font-size: 1em; color: #fff; margin-bottom: 20px; text-align: left; line-height: 1.5;">
+                Has superado las fotos, pero la <b>Semana Fantástica del Amor</b> se pone seria. <br><br>
+                Tienes delante una bomba conectada a nuestros recuerdos. Tienes <b>15 segundos</b> por pregunta.<br><br>
+                Para elegir tu respuesta, rompe su cable (puedes tocar el propio cable o la etiqueta de abajo). Solo uno desactiva el temporizador...
+            </p>
+            <button class="btn-accion" onclick="empezarDeVerdad()">¡Vamos allá!</button>
+        </div>
+    </div>
+
+    <div class="contenedor" id="pantalla-juego">
+        <h1>Desactiva la Bomba</h1>
+        <div id="nivel-texto">Bomba 1 de 7</div>
+
+        <!-- PREGUNTA -->
+        <div class="caja-pregunta" id="pregunta-texto">
+            Cargando sistema...
+        </div>
+
+        <!-- SISTEMA EXPLOSIVO COMPLETO -->
+        <div class="sistema-explosivo">
+            
+            <!-- BOMBA GIGANTE -->
+            <div class="bomba-fisica" id="caja-timer">
+                <div class="cinta-americana cinta-arriba"></div>
+                <div class="cinta-americana cinta-abajo"></div>
+                
+                <div class="placa-base">
+                    <div class="led-peligro"></div>
+                    <div class="pantalla-lcd">
+                        <div id="timer">15.00</div>
+                    </div>
+                </div>
+
+                <!-- Puertos de donde salen los cables -->
+                <div class="puertos-conexion">
+                    <div class="puerto rojo"></div>
+                    <div class="puerto verde"></div>
+                    <div class="puerto azul"></div>
+                </div>
+            </div>
+
+            <!-- CABLES Y OPCIONES HORIZONTALES -->
+            <div class="grid-cables">
+                
+                <!-- COLUMNA ROJA -->
+                <div class="columna-cable">
+                    <div class="cable-vertical rojo" id="cable-rojo" onclick="cortarCable('rojo')">
+                        <div class="cable-segmento-arriba"></div>
+                        <div class="cable-brecha"></div>
+                        <div class="cable-segmento-abajo"></div>
+                        <div class="icono-tijera">✂️</div>
+                    </div>
+                    <div class="respuesta-texto" id="resp-rojo" onclick="cortarCable('rojo')">Opción A</div>
+                </div>
+                
+                <!-- COLUMNA VERDE -->
+                <div class="columna-cable">
+                    <div class="cable-vertical verde" id="cable-verde" onclick="cortarCable('verde')">
+                        <div class="cable-segmento-arriba"></div>
+                        <div class="cable-brecha"></div>
+                        <div class="cable-segmento-abajo"></div>
+                        <div class="icono-tijera">✂️</div>
+                    </div>
+                    <div class="respuesta-texto" id="resp-verde" onclick="cortarCable('verde')">Opción B</div>
+                </div>
+
+                <!-- COLUMNA AZUL -->
+                <div class="columna-cable">
+                    <div class="cable-vertical azul" id="cable-azul" onclick="cortarCable('azul')">
+                        <div class="cable-segmento-arriba"></div>
+                        <div class="cable-brecha"></div>
+                        <div class="cable-segmento-abajo"></div>
+                        <div class="icono-tijera">✂️</div>
+                    </div>
+                    <div class="respuesta-texto" id="resp-azul" onclick="cortarCable('azul')">Opción C</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP GAME OVER / EXPLOSIÓN -->
+    <div id="popup-gameover" class="overlay">
+        <div class="contenido-popup">
+            <h2 style="color: #fff; margin-top: 0; font-size: 3em; text-shadow: 0 0 20px #E50914;">BOOM 💥</h2>
+            <p style="font-size: 1.2em; color: #ccc;">Has volado por los aires. Tienes que ser más rápida y precisa.</p>
+            <button class="btn-accion" onclick="reiniciarJuego()">Volver a intentar</button>
+        </div>
+    </div>
+
+    <!-- POPUP VICTORIA FINAL -->
+    <div id="popup-victoria" class="overlay">
+        <div class="contenido-popup">
+            <h2 style="color: #27ae60; margin-top: 0; font-size: 2em;">¡SISTEMA SALVADO! 🛡️</h2>
+            <p style="font-size: 1em; color: #fff; margin-bottom: 15px;">Has desactivado todas las bombas. Aquí tienes la pieza final del rompecabezas para mañana:</p>
+            
+            <div style="background: rgba(39, 174, 96, 0.1); border: 2px dashed #27ae60; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
+                <div style="font-size: 2.2em; color: #27ae60; font-weight: bold; line-height: 1.2;">
+                    钟 (Zhong)
+                </div>
+            </div>
+
+            <p style="font-size: 0.9em; color: #aaa; margin-bottom: 20px; line-height: 1.4;">(Para hacerte el favor puedes probarlo ya, ves al viernes y miras el ULTIMO REGALO, pero antes mira el regalo de hoy)</p>
+
+            <a href="./regaloJueves.html" class="btn-accion" style="background: #E50914;">REGALO de HOY</a>
+        </div>
+    </div>
+
+    <script>
+        // TUS PREGUNTAS
+        const bombas = [
+            {
+                pregunta: "¿Cuál fue nuestra \"Primera Cita\" a solas?",
+                tiempo: 15,
+                opciones: {
+                    rojo: " Ver las estrellas",
+                    verde: "Hacer una maleta",
+                    azul: "Ir a la piscina"
+                },
+                correcto: "verde" 
+            },
+            {
+                pregunta: "¿Donde fue nuestro Primer Beso?",
+                tiempo: 15, 
+                opciones: {
+                    rojo: "Casa Raulito",
+                    verde: "Casa Sarita",
+                    azul: "En la calle"
+                },
+                correcto: "rojo" 
+            },
+            {
+                pregunta: "¿Donde y cuando te pedi salir?",
+                tiempo: 15, 
+                opciones: {
+                    rojo: "17 Junio en la cama de Sara",
+                    verde: "17 Julio en la cama de Raul",
+                    azul: "17 Julio en la cama de Sara"
+                },
+                correcto: "azul" 
+            },
+            {
+                pregunta: "¿Que le da un asco impresionante a mi Querida?",
+                tiempo: 15, 
+                opciones: {
+                    rojo: "Lasaña del Mercadona",
+                    verde: "Pizzas",
+                    azul: "Hamburguesas"
+                },
+                correcto: "azul" 
+            },
+            {
+                pregunta: "¿Cuantas veces me follo Sara Sanchez a Raul en Sevilla?",
+                tiempo: 15, 
+                opciones: {
+                    rojo: "8 veces",
+                    verde: "0 vez",
+                    azul: "200 veces"
+                },
+                correcto: "rojo"
+            },
+            {
+                pregunta: "¿Vacaciones de ESTE VERANO?",
+                tiempo: 15, 
+                opciones: {
+                    rojo: "Velada y Arenal Sound",
+                    verde: "Velada, Arenal Sound, La llosa y mas...",
+                    azul: "Velada, Arenal Sound y La llosa"
+                },
+                correcto: "verde"
+            },
+            {
+                pregunta: "¿Cuanto TE QUIERO (yo Raul a ti Sarita)?",
+                tiempo: 15, 
+                opciones: {
+                    rojo: "OCHO TUMBADO",
+                    verde: "INFINITO",
+                    azul: "1000000000"
+                },
+                correcto: "rojo"
+            }
+        ];
+
+        let nivelActual = 0;
+        let tiempoRestante = 0;
+        let intervaloTimer;
+        let juegoActivo = false;
+
+        const timerDOM = document.getElementById("timer");
+        const cajaTimer = document.getElementById("caja-timer");
+        const bodyDOM = document.body;
+
+        // FUNCIÓN QUE ARRANCA TODO DESDE EL POPUP
+        function empezarDeVerdad() {
+            document.getElementById("popup-inicio").style.display = "none";
+            cargarBomba();
+        }
+
+        function cargarBomba() {
+            let bomba = bombas[nivelActual];
+            document.getElementById("nivel-texto").innerText = `Bomba ${nivelActual + 1} de ${bombas.length}`;
+            document.getElementById("pregunta-texto").innerText = bomba.pregunta;
+            
+            document.getElementById("resp-rojo").innerText = bomba.opciones.rojo;
+            document.getElementById("resp-verde").innerText = bomba.opciones.verde;
+            document.getElementById("resp-azul").innerText = bomba.opciones.azul;
+
+            // Reiniciar estado visual
+            document.querySelectorAll('.cable-vertical').forEach(c => c.classList.remove('cortado'));
+            cajaTimer.classList.remove('peligro');
+            bodyDOM.classList.remove('boom');
+
+            tiempoRestante = bomba.tiempo;
+            actualizarDisplayTiempo();
+            
+            juegoActivo = true;
+            clearInterval(intervaloTimer);
+            intervaloTimer = setInterval(tickTiempo, 10);
+        }
+
+        function tickTiempo() {
+            if (!juegoActivo) return;
+            
+            tiempoRestante -= 0.01;
+            
+            if (tiempoRestante <= 0) {
+                tiempoRestante = 0;
+                explotarBomba();
+            } else if (tiempoRestante <= 5.00 && !cajaTimer.classList.contains('peligro')) {
+                cajaTimer.classList.add('peligro');
+            }
+
+            actualizarDisplayTiempo();
+        }
+
+        function actualizarDisplayTiempo() {
+            timerDOM.innerText = tiempoRestante.toFixed(2).padStart(5, '0');
+        }
+
+        // Modificado para que coja el elemento por su ID y funcione igual si tocas el cable o el texto
+        function cortarCable(color) {
+            if (!juegoActivo) return;
+
+            let elementoCable = document.getElementById('cable-' + color);
+            elementoCable.classList.add("cortado");
+            
+            let bomba = bombas[nivelActual];
+
+            if (color === bomba.correcto) {
+                juegoActivo = false;
+                clearInterval(intervaloTimer);
+                
+                setTimeout(() => {
+                    if (nivelActual < bombas.length - 1) {
+                        nivelActual++;
+                        cargarBomba();
+                    } else {
+                        document.getElementById("popup-victoria").style.display = "flex";
+                    }
+                }, 800);
+            } else {
+                explotarBomba();
+            }
+        }
+
+        function explotarBomba() {
+            juegoActivo = false;
+            clearInterval(intervaloTimer);
+            
+            if (navigator.vibrate) {
+                navigator.vibrate([500, 200, 500]);
+            }
+
+            bodyDOM.classList.add("boom");
+
+            setTimeout(() => {
+                document.getElementById("popup-gameover").style.display = "flex";
+            }, 600);
+        }
+
+        function reiniciarJuego() {
+            document.getElementById("popup-gameover").style.display = "none";
+            nivelActual = 0;
+            cargarBomba();
+        }
+    </script>
+</body>
+</html>

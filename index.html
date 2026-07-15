@@ -137,9 +137,9 @@
             background: rgba(0, 0, 0, 0.35);
             border: 1px solid rgba(204, 43, 43, 0.5);
             border-radius: 15px;
-            padding: 30px 20px; /* Más espacio interior para hacerla más grande */
+            padding: 30px 20px;
             text-align: center;
-            width: 100%; /* Ocupa todo el ancho disponible */
+            width: 100%;
             margin: 0 auto;
             box-shadow: 0 10px 25px rgba(204, 43, 43, 0.15);
             display: flex;
@@ -231,13 +231,12 @@
         </div>
     </div>
 
-    <!-- MODAL DE DÍA BLOQUEADO (Con puerta trasera secreta) -->
+    <!-- MODAL DE DÍA BLOQUEADO -->
     <div id="modal-bloqueado" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px);">
         <div style="background: #412b0e; border: 1px solid rgba(204, 43, 43, 0.5); border-radius: 15px; padding: 30px 20px; text-align: center; max-width: 350px; width: 100%; box-shadow: 0 10px 25px rgba(204, 43, 43, 0.5);">
             <h2 style="color: #cc2b2b; margin-top: 0; font-size: 1.8em;">🔒 Bloqueado</h2>
             <p id="texto-modal-fecha" style="color: #f9e6cf; margin-bottom: 25px; font-size: 1.1em;"></p>
             
-            <!-- Input de contraseña -->
             <input type="password" id="input-pass" placeholder="Ingresar contraseña" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(253, 250, 246, 0.2); color: #fdfaf6; padding: 12px; border-radius: 8px; width: 80%; margin-bottom: 15px; text-align: center; font-family: 'Playfair Display', serif; font-size: 1em; outline: none;">
             <br>
             <button onclick="document.getElementById('modal-bloqueado').style.display='none'" style="background: transparent; color: #fdfaf6; border: none; text-decoration: underline; font-size: 1em; cursor: pointer; padding: 10px;">Volver a los días</button>
@@ -249,7 +248,6 @@
         document.addEventListener("DOMContentLoaded", function() {
             const ahora = new Date();
 
-            // Las fechas reales en las que se abre cada día
             const fechas = {
                 13: new Date(2026, 6, 13, 0, 0, 0),
                 14: new Date(2026, 6, 14, 0, 0, 0),
@@ -262,7 +260,6 @@
                 13: "Lunes 13", 14: "Martes 14", 15: "Miércoles 15", 16: "Jueves 16", 17: "Viernes 17"
             };
 
-            // DICCIONARIO DE CONTRASEÑAS SECRETAS
             const contrasenas = {
                 13: 'RaulySara2466',
                 14: 'RaulySara2467',
@@ -273,7 +270,6 @@
 
             let diaAProbar = null; 
 
-            // ESTA FUNCIÓN HACE LA MAGIA DE ABRIR LA CAJA Y PONER EL LINK
             function forzarDesbloqueo(dia) {
                 document.getElementById('candado-' + dia).style.display = 'none';
                 let texto = document.getElementById('texto-' + dia);
@@ -297,11 +293,17 @@
                     texto.innerHTML = "<i>Pista 3 - Miércoles 🔓</i><br><br>Salva nuestro corazón...<br><br><b>Toca esta caja para jugar 🎮</b>";
                 }
 
-                // AQUÍ LE METEMOS EL TEXTO DEL JUEVES
                 if (dia === 16) {
                     let caja = document.getElementById('caja-jueves');
                     caja.style.cursor = 'pointer';
                     texto.innerHTML = "<i>Pista 4 - Jueves 🔓</i><br><br>Nuestros recuerdos borrosos...<br><br><b>Toca esta caja para jugar 🎮</b>";
+                }
+
+                // AQUÍ LE METEMOS EL TEXTO DEL VIERNES
+                if (dia === 17) {
+                    let caja = document.getElementById('caja-viernes');
+                    caja.style.cursor = 'pointer';
+                    texto.innerHTML = "<i>El Hilo Rojo 🔓</i><br><br>El destino te llama...<br><br><b>Toca esta caja para ver 🎁</b>";
                 }
                 
                 // Redirecciones
@@ -309,12 +311,12 @@
                 document.getElementById(cajaId).onclick = function() {
                     if (dia === 13) window.location.href = 'lunes.html';
                     if (dia === 14) window.location.href = 'martes.html';
-                    if (dia === 15) window.location.href = 'ahorcado.html'; 
-                    if (dia === 16) window.location.href = 'jueves.html'; // ENLACE AL JUEVES
+                    if (dia === 15) window.location.href = 'miercoles.html'; 
+                    if (dia === 16) window.location.href = 'jueves.html'; 
+                    if (dia === 17) window.location.href = 'viernes.html'; // ENLACE AL VIERNES
                 };
             }
 
-            // COMPROBACIÓN INICIAL AL CARGAR LA WEB
             for (let dia = 13; dia <= 17; dia++) {
                 let cajaId = (dia === 17) ? 'caja-viernes' : 'caja-' + ['lunes','martes','miercoles','jueves'][dia-13];
                 let caja = document.getElementById(cajaId);
@@ -332,7 +334,6 @@
                 }
             }
 
-            // DETECTAR LA CONTRASEÑA MIENTRAS ESCRIBES
             document.getElementById('input-pass').addEventListener('input', function(e) {
                 if (diaAProbar && e.target.value === contrasenas[diaAProbar]) {
                     document.getElementById('modal-bloqueado').style.display = 'none'; 
