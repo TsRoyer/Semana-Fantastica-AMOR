@@ -18,12 +18,12 @@
             justify-content: center;
             min-height: 100vh;
             text-align: center;
-            overflow: hidden;
+            overflow-x: hidden; 
         }
 
         .contenedor {
-            padding: 20px;
-            max-width: 450px;
+            padding: 30px 20px;
+            max-width: 500px;
             width: 100%;
             box-sizing: border-box;
             z-index: 10;
@@ -41,7 +41,7 @@
             color: #ccc;
             font-size: 1.1em;
             line-height: 1.5;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
 
         /* EL RELOJ */
@@ -51,7 +51,7 @@
             border-radius: 15px;
             padding: 25px 15px;
             box-shadow: 0 0 30px rgba(229, 9, 20, 0.3);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             animation: latido 2s infinite ease-in-out;
         }
 
@@ -62,7 +62,6 @@
         }
 
         .numeros-reloj {
-            /* Usamos clamp para que en móvil sea un poco más pequeño y quepan los 4 bloques */
             font-size: clamp(1.8em, 6vw, 2.8em);
             font-family: monospace;
             font-weight: bold;
@@ -93,7 +92,7 @@
         .separador {
             color: #555;
             animation: parpadeo 1s infinite;
-            margin-bottom: 15px; /* Para alinearlo con los números y no con las letras */
+            margin-bottom: 15px;
         }
 
         @keyframes parpadeo {
@@ -101,30 +100,93 @@
             50% { opacity: 0; }
         }
 
+        /* BOTÓN VOLVER (Mientras está el timer) */
+        .btn-volver-timer {
+            color: #888;
+            text-decoration: underline;
+            margin-top: 10px;
+            display: inline-block;
+            font-size: 0.95em;
+            transition: color 0.2s;
+        }
+
+        .btn-volver-timer:hover {
+            color: #fff;
+        }
+
         /* SORPRESA FINAL OCULTA */
         #zona-sorpresa {
             display: none;
-            animation: aparecer 1s ease forwards;
+            animation: aparecer 1.5s ease forwards;
+            padding-bottom: 30px;
         }
 
         @keyframes aparecer {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* DISEÑO DEL TEXTO CHENGYU */
+        .mensaje-final {
+            text-align: left;
+            line-height: 1.6;
+            font-size: 1.05em;
+            color: #ddd;
+        }
+
+        .chengyu-destacado {
+            font-size: 2.8em;
+            color: #E50914;
+            text-align: center;
+            margin: 20px 0 5px 0;
+            font-weight: bold;
+            letter-spacing: 8px;
+            text-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
+        }
+
+        .simbolo-caja {
+            background: rgba(229, 9, 20, 0.05);
+            border-left: 4px solid #E50914;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .simbolo-char {
+            font-size: 1.4em;
+            color: #f39c12; 
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .firma-final {
+            text-align: center; 
+            font-size: 2.5em; 
+            font-family: 'Playfair Display', serif; 
+            color: #E50914; 
+            margin-top: 50px;
+            text-shadow: 0 0 10px rgba(229, 9, 20, 0.3);
+        }
+
+        /* BOTÓN DE WHATSAPP FINAL */
         .btn-final {
-            background: #E50914;
+            background: #25D366;
             color: white;
             border: none;
             padding: 15px 30px;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 1.2em;
+            font-size: 1.1em;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
             transition: transform 0.2s;
-            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
         }
 
         .btn-final:active {
@@ -135,9 +197,10 @@
 <body>
 
     <div class="contenedor">
-        <h1>El momento ha llegado</h1>
         
+        <!-- ZONA DEL TEMPORIZADOR -->
         <div id="mensaje-espera">
+            <h1>El momento ha llegado</h1>
             <p>Has superado todas las pruebas de la semana, pero el destino aún está procesando la recompensa final. <br><br> Vuelve aquí exactamente el <b>VIERNES</b> a las <b>16:00</b>.</p>
             
             <div class="reloj-caja">
@@ -145,26 +208,65 @@
                     <!-- Se rellena con JS -->
                 </div>
             </div>
+
+            <a href="index.html" class="btn-volver-timer">Volver al inicio</a>
         </div>
 
+        <!-- ZONA DE LA SORPRESA FINAL -->
         <div id="zona-sorpresa">
-            <h2 style="color: #E50914; font-size: 2.2em; margin-bottom: 10px;">¡El tiempo se ha cumplido! ⏳</h2>
-            <p style="font-size: 1.3em; color: #fff; margin-bottom: 30px;">Has llegado al final del hilo rojo...</p>
+            <h2 style="color: #E50914; font-size: 2em; margin-bottom: 30px; font-family: 'Playfair Display', serif; text-align: center;">El Hilo Rojo 🧵</h2>
             
-            <div style="background: rgba(229, 9, 20, 0.1); border: 2px dashed #E50914; padding: 30px 15px; border-radius: 12px; margin-bottom: 30px;">
-                <p style="margin: 0; font-size: 1.6em; color: #f39c12; font-weight: bold; text-transform: uppercase;">
-                    ¡Pídele el regalo a tu novio ahora mismo! 😎🎁
-                </p>
-            </div>
+            <div class="mensaje-final">
+                <p>Seguramente te estarás preguntando qué significan las cuatro notas que has ido encontrando. Juntas forman un Chengyu, un antiguo proverbio chino de cuatro símbolos:</p>
+                
+                <div class="chengyu-destacado">情有独钟</div>
+                <p style="text-align: center; color: #888; font-style: italic; margin-top: 0; margin-bottom: 35px;">(Qíng yǒu dú zhōng)</p>
+                
+                <p>No elegí estas letras al azar. Es la forma más exacta, intensa y épica que encontré para explicarte cómo te veo y lo que me haces sentir. Cada símbolo tiene un peso enorme y cuenta una parte de nuestra historia:</p>
+                
+                <div class="simbolo-caja">
+                    <div class="simbolo-char">情 (Qíng) - El Sentimiento</div>
+                    Representa la fuerza del amor puro. No es un cariño pasajero o una casualidad, es esa emoción inmensa que te cambia por dentro y que lo mueve todo.
+                </div>
+                
+                <div class="simbolo-caja">
+                    <div class="simbolo-char">有 (Yǒu) - La Certeza</div>
+                    Significa "tener". Es la seguridad absoluta de saber que lo que compartimos es real, inquebrantable y completamente nuestro.
+                </div>
+                
+                <div class="simbolo-caja">
+                    <div class="simbolo-char">独 (Dú) - La Exclusividad</div>
+                    Significa "únicamente". En un mundo gigante, caótico y con miles de millones de personas, tú eres la excepción a todo. Para mí, solo existes tú.
+                </div>
+                
+                <div class="simbolo-caja">
+                    <div class="simbolo-char">钟 (Zhōng) - El Enfoque Absoluto</div>
+                    Es la concentración total. Como si fueras mi gravedad o una brújula que solo sabe apuntar en una dirección: la tuya.
+                </div>
 
-            <!-- Botón de WhatsApp para que te lo pida del tirón -->
-            <!-- OJO: Cambia TUNUMERO por tu número real con el 34 delante -->
-            <a href="https://wa.me/34644325070?text=¡El%20temporizador%20ha%20terminado!%20Dame%20mi%20regalo%20ya%20😎🎁" target="_blank" class="btn-final" style="background: #25D366; box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);">💬 Reclamar Regalo por WhatsApp</a>
+                <div style="text-align: center; margin: 40px 0; padding: 20px; border: 1px solid #333; border-radius: 10px; background: rgba(0,0,0,0.5);">
+                    <p style="margin: 0; font-size: 1.1em; color: #ccc;">Cuando juntas todo esto, 情有独钟 significa:</p>
+                    <p style="margin: 10px 0 0 0; font-size: 1.4em; color: #f39c12; font-weight: bold; font-family: 'Playfair Display', serif;">"Mi amor se concentra únicamente en ti".</p>
+                </div>
+                
+                <p>Quería darte estas notas para recordarte que, para mí, no hay nadie más. Todos mis sentidos, mi atención y mi corazón están enfocados en ti. Eres mi prioridad, mi refugio y mi persona favorita en el universo entero.</p>
+                
+                <div class="firma-final">Te amo.</div>
+
+                <!-- SECCIÓN FINAL: PEDIR EL REGALO -->
+                <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #333; text-align: center;">
+                    <p style="font-size: 1.3em; color: #f39c12; font-weight: bold; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px;">
+                        ¡Pídele el último regalo a tu novio! 😎🎁
+                    </p>
+                    <a href="https://wa.me/34644325070?text=¡He%20leído%20el%20mensaje%20y%20estoy%20llorando!%20%20Dame%20mi%20último%20regalo%20ya%20🥰🎁" target="_blank" class="btn-final">💬 Reclamar Regalo por WhatsApp</a>
+                </div>
+            </div>
         </div>
+    </div>
 
     <script>
         // FIJAMOS LA FECHA OBJETIVO: 17 de Julio de 2026 a las 16:00:00
-        const fechaObjetivo = new Date(2026, 6, 17, 16, 0, 0).getTime();
+        const fechaObjetivo = new Date(2026, 6, 17, 19, 0, 0).getTime();
 
         const relojDOM = document.getElementById("contador");
         const mensajeEspera = document.getElementById("mensaje-espera");
@@ -182,7 +284,7 @@
                 return;
             }
 
-            // CÁLCULOS DEL TIEMPO (AHORA CON DÍAS)
+            // CÁLCULOS DEL TIEMPO
             const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
             const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
