@@ -172,6 +172,28 @@
             display: inline-block; 
             margin-top: 15px;
         }
+
+        /* BOTÓN DE AYUDA (Ahora diseñado para el modal) */
+        .boton-ayuda {
+            color: #cc2b2b;
+            text-decoration: none;
+            border: 1px solid #cc2b2b;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 0.85em;
+            font-family: 'Helvetica Neue', sans-serif;
+            font-weight: bold;
+            transition: transform 0.2s;
+            width: 88%;
+            box-sizing: border-box;
+        }
+
+        .boton-ayuda:active {
+            transform: scale(0.95);
+            background: rgba(204, 43, 43, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -237,9 +259,15 @@
             <h2 style="color: #cc2b2b; margin-top: 0; font-size: 1.8em;">🔒 Bloqueado</h2>
             <p id="texto-modal-fecha" style="color: #f9e6cf; margin-bottom: 25px; font-size: 1.1em;"></p>
             
-            <input type="password" id="input-pass" placeholder="Ingresar contraseña" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(253, 250, 246, 0.2); color: #fdfaf6; padding: 12px; border-radius: 8px; width: 80%; margin-bottom: 15px; text-align: center; font-family: 'Playfair Display', serif; font-size: 1em; outline: none;">
+            <input type="password" id="input-pass" placeholder="Ingresar contraseña" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(253, 250, 246, 0.2); color: #fdfaf6; padding: 12px; border-radius: 8px; width: 80%; margin-bottom: 15px; text-align: center; font-family: 'Playfair Display', serif; font-size: 1em; outline: none; transition: border 0.3s;">
+            <br>
+            <!-- BOTÓN DE COMPROBAR CONTRASEÑA -->
+            <button id="btn-comprobar" style="background: #cc2b2b; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1em; margin-bottom: 15px; width: 88%; font-family: 'Helvetica Neue', sans-serif;">Comprobar Contraseña</button>
             <br>
             <button onclick="document.getElementById('modal-bloqueado').style.display='none'" style="background: transparent; color: #fdfaf6; border: none; text-decoration: underline; font-size: 1em; cursor: pointer; padding: 10px;">Volver a los días</button>
+            
+            <!-- BOTÓN DE WHATSAPP PARA PEDIR AYUDA (Solo aparece para el viernes) -->
+            <a href="https://wa.me/34644325070?text=PEDIR%20AYUDA%20PARA%20EL%20VIERNES" target="_blank" class="boton-ayuda" id="btn-ayuda-modal" style="display: none;">🆘 Pedir Ayuda</a>
         </div>
     </div>
 
@@ -299,7 +327,6 @@
                     texto.innerHTML = "<i>Pista 4 - Jueves 🔓</i><br><br>Nuestros recuerdos borrosos...<br><br><b>Toca esta caja para jugar 🎮</b>";
                 }
 
-                // AQUÍ LE METEMOS EL TEXTO DEL VIERNES
                 if (dia === 17) {
                     let caja = document.getElementById('caja-viernes');
                     caja.style.cursor = 'pointer';
@@ -313,31 +340,62 @@
                     if (dia === 14) window.location.href = 'martes.html';
                     if (dia === 15) window.location.href = 'miercoles.html'; 
                     if (dia === 16) window.location.href = 'jueves.html'; 
-                    if (dia === 17) window.location.href = 'viernes.html'; // ENLACE AL VIERNES
+                    if (dia === 17) window.location.href = 'viernes.html'; 
                 };
             }
 
+            // REVISIÓN DE FECHAS
             for (let dia = 13; dia <= 17; dia++) {
                 let cajaId = (dia === 17) ? 'caja-viernes' : 'caja-' + ['lunes','martes','miercoles','jueves'][dia-13];
                 let caja = document.getElementById(cajaId);
 
-                if (ahora >= fechas[dia]) {
+                // OJO AQUÍ: El viernes (17) NUNCA entra por fecha, siempre exige contraseña
+                if (ahora >= fechas[dia] && dia !== 17) {
                     forzarDesbloqueo(dia);
                 } else {
                     caja.style.cursor = 'pointer';
                     caja.onclick = function() {
                         diaAProbar = dia;
-                        document.getElementById('texto-modal-fecha').innerText = `Se desbloquea a las 00:00:00 del ${nombresDias[dia]}.`;
+                        
+                        // Lógica del modal dependiendo del día
+                        if (dia === 17) {
+                            document.getElementById('texto-modal-fecha').innerText = `Solo podrás avanzar si conoces la respuesta final...`;
+                            document.getElementById('btn-ayuda-modal').style.display = 'inline-block'; // Muestra el botón solo el viernes
+                        } else {
+                            document.getElementById('texto-modal-fecha').innerText = `Se desbloquea a las 00:00:00 del ${nombresDias[dia]}.`;
+                            document.getElementById('btn-ayuda-modal').style.display = 'none'; // Lo oculta los demás días
+                        }
+                        
                         document.getElementById('modal-bloqueado').style.display = 'flex';
                         document.getElementById('input-pass').value = ''; 
+                        document.getElementById('input-pass').style.borderColor = 'rgba(253, 250, 246, 0.2)'; 
                     };
                 }
             }
 
-            document.getElementById('input-pass').addEventListener('input', function(e) {
-                if (diaAProbar && e.target.value === contrasenas[diaAProbar]) {
+            // FUNCIÓN DEL NUEVO BOTÓN DE COMPROBAR
+            function intentarDesbloqueo() {
+                let passIntroducida = document.getElementById('input-pass').value;
+                if (diaAProbar && passIntroducida === contrasenas[diaAProbar]) {
                     document.getElementById('modal-bloqueado').style.display = 'none'; 
                     forzarDesbloqueo(diaAProbar); 
+                } else {
+                    // Si falla, le ponemos el borde rojito un segundo para darle feedback
+                    let cajaInput = document.getElementById('input-pass');
+                    cajaInput.style.borderColor = '#E50914';
+                    setTimeout(() => {
+                        cajaInput.style.borderColor = 'rgba(253, 250, 246, 0.2)';
+                    }, 1000);
+                }
+            }
+
+            // Al hacer click en el botón rojo
+            document.getElementById('btn-comprobar').onclick = intentarDesbloqueo;
+
+            // Al darle al Enter en el teclado del móvil o PC
+            document.getElementById('input-pass').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    intentarDesbloqueo();
                 }
             });
         });
